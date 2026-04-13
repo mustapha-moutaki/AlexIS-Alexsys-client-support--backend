@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: alexsis
+  jpa:
+    hibernate:
+      ddl-auto: none
+#      here we disable hibernate from automatically creating tables, we will do it manually
