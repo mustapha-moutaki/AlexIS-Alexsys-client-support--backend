@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-users
+      author: mustaphamoutaki
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                    name: first_name
+                    type: varchar(30)
+                    constraints:
+                      nullable: false
+
+              - column:
+                  name: last_name
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+
+
+
+
+#databaseChangeLog:
+#  - changeSet:
+#      id: 003-users-role-fk
+#      author: mustaphamoutaki
+#      changes:
+#        - addForeignKeyConstraint:
+#            baseTableName: users
+#            baseColumnNames: role_id
+#            referencedTableName: roles
+#            referencedColumnNames: id
+#            constraintName: fk_users_roles
+#            onDelete: SET NULL

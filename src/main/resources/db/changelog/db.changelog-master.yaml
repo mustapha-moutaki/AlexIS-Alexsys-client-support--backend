@@ -1,13 +1,9 @@
 databaseChangeLog:
-  - changeSet:
-      id: 001-create-users
-      author: mustaphamoutaki
-      changes:
-        - createTable:
-            tableName: users
-            columns:
-              - column:
-                  name: id
-                  type: bigint
-                  autoIncrement: true
-                  
+  - include:
+      file: db/changelog/changes/001-create-users.yaml
+
+  - include:
+      file: db/changelog/changes/002-add-columns-users.yaml
+
+  - include:
+      file: db/changelog/changes/003-add-unique-email.yaml
