@@ -11,3 +11,9 @@ databaseChangeLog:
         file: db/changelog/changes/005-create-agents-table.yml
   - include:
         file: db/changelog/changes/006-agents-user-fk.yml
+  - include:
+      file: db/changelog/changes/007-create-tickets-table.yml
+  - include:
+      file: db/changelog/changes/008-create-categories-table.yml
+  - include:
+      file: db/changelog/changes/009-ticket-user-category-fks.yml
