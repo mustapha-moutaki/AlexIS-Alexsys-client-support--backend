@@ -3,4 +3,7 @@ databaseChangeLog:
       file: db/changelog/changes/001-create-users.yaml
   - include:
       file: db/changelog/changes/002-add-missing-columns.yml
-#
+  - include:
+      file: db/changelog/changes/003-create-clients-table.yml
+  - include:
+      file: db/changelog/changes/004-clients-user-fk.yml
