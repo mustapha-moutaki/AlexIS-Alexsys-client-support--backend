@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-create-categories-table
+      author: mustaphamoutaki
+      changes:
+          - createTable:
+                tableName: categories
+                columns:
+                   - column:
+                        name: id
+                        type: bigint
+                        autoIncrement: true
+                        constraints:
+                            primaryKey: true
+                            nullable: false
+
+                   - column:
+                         name: name
+                         type: varchar(30)
+                         constraints:
+                            nullable: false
+                            unique: true
+                   - column:
+                         name: description
+                         type: text
+                         constraints:
+                             nullable: true
+                   - column:
+                         name: created_at
+                         type: timestamp
+                         defaultValueComputed: CURRENT_TIMESTAMP
+
+                   - column:
+                         name: created_by
+                         type: bigint
+                         constraints:
+                                nullable: true
+
