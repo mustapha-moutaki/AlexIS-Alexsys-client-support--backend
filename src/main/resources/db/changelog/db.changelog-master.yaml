@@ -7,3 +7,7 @@ databaseChangeLog:
       file: db/changelog/changes/003-create-clients-table.yml
   - include:
       file: db/changelog/changes/004-clients-user-fk.yml
+  - include:
+        file: db/changelog/changes/005-create-agents-table.yml
+  - include:
+        file: db/changelog/changes/006-agents-user-fk.yml
