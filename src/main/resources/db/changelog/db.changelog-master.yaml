@@ -17,3 +17,7 @@ databaseChangeLog:
       file: db/changelog/changes/008-create-categories-table.yml
   - include:
       file: db/changelog/changes/009-ticket-user-category-fks.yml
+  - include:
+      file: db/changelog/changes/010-create-comments-table.yml
+  - include:
+        file: db/changelog/changes/011-comments-user-fk.yml
