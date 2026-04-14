@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-comments-user-fk
+      author: mustaphamoutaki
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: comments
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_comments_users
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: comments
+            baseColumnNames: ticket_id
+            referencedTableName: tickets
+            referencedColumnNames: id
+            constraintName: fk_comments_tickets
+            onDelete: CASCADE
