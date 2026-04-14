@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-agents-table
+      author: mustaphamoutaki
+      changes:
+
+        - createTable:
+            tableName: agents
+            columns:
+
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: specialization
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: average_resolution_time
+                  type: integer
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: performance_rating
+                  type: integer
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: availability_status
+                  type: varchar(30)
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    unique: true
