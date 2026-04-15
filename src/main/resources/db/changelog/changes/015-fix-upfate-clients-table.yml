@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 015-fix-update-clients-table
+      author: mustaphamoutaki
+      changes:
+        - createTable:
+            tableName: clients
+            columns:
+
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: registration_date
+                  type: timestamp
+
+              - column:
+                  name: satisfaction_score
+                  type: integer
