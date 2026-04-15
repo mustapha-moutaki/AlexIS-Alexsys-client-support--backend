@@ -1,8 +1,10 @@
-package com.alexsysSolutions.alexsis.dto.request;
+package com.alexsysSolutions.alexsis.dto.request.user;
 
 
 import com.alexsysSolutions.alexsis.enums.UserRole;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +14,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDtoRequest {
+public class UserCreateDtoRequest {
 
     @NotBlank(message = "first name is required")
     private String firstName;
