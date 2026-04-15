@@ -29,6 +29,7 @@ public interface UserRepositroy extends JpaRepository<User, Long> {
             @Param("role") String role,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
+            @Param("includeDeleted") boolean includeDeleted,
             Pageable pageable
     );
 }
