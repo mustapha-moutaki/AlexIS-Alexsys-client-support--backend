@@ -9,8 +9,6 @@ import lombok.*;
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

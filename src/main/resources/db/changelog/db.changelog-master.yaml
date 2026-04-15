@@ -21,3 +21,7 @@ databaseChangeLog:
       file: db/changelog/changes/010-create-comments-table.yml
   - include:
         file: db/changelog/changes/011-comments-user-fk.yml
+#  - include:
+#        file: db/changelog/changes/013-clients-users-fk.yml
+  - include:
+        file: db/changelog/changes/014-drop-user_id-column-clients-table.yml
