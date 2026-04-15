@@ -1,0 +1,49 @@
+package com.alexsysSolutions.alexsis.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "attachments")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
+@SequenceGenerator(name="attachment_seq", sequenceName = "attachment_seq", allocationSize = 5)
+
+public class Attachment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attachment_seq")
+    private Long id;
+
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
+
+    @Column(name = "file_type", nullable = false)
+    private String fileType;
+
+    @Column(name = "file_url", nullable = false)
+    private String fileUrl;
+
+    @Column(name = "file_size", nullable = true)
+    private Long fileSize;
+
+    private LocalDateTime uploadedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "ticket_id")
+    private Ticket ticket;
+
+    @PrePersist
+    private void onCreate(){
+        this.uploadedAt = LocalDateTime.now();
+    }
+
+}
