@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "users")
@@ -14,6 +16,10 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
+
+// This tells Hibernate: when someone calls repository.delete(), run this SQL instead
+@SQLDelete(sql = "UPDATE users SET is_deleted = true, is_active = false WHERE id = ?")
+
 public class User extends BaseEntity {
 
     @Column(name = "first_name", nullable = false)
