@@ -1,8 +1,9 @@
 package com.alexsysSolutions.alexsis.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -13,10 +14,15 @@ import java.time.LocalDateTime;
         sequenceName = "global_seq",
         allocationSize = 50
 )
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(name = "created_at", updatable = false)
