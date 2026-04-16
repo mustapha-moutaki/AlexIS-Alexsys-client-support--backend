@@ -8,13 +8,11 @@ import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
 import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.mapper.UserMapper;
 import com.alexsysSolutions.alexsis.model.User;
-import com.alexsysSolutions.alexsis.reposiotry.UserRepositroy;
+import com.alexsysSolutions.alexsis.reposiotry.UserRepository;
 import com.alexsysSolutions.alexsis.service.UserService;
 import com.alexsysSolutions.alexsis.util.PasswordUtil;
 import jakarta.transaction.Transactional;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,21 +21,21 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+
 @Transactional
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepositroy userRepositroy;
+    private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @Override
     public UserDtoResponse create(UserCreateDtoRequest dto) {
-        if(userRepositroy.findByEmail(dto.getEmail()).isPresent()){
+        if(userRepository.findByEmail(dto.getEmail()).isPresent()){
             throw new ValidationException("User with this email already exists");
         }
-        if(userRepositroy.findByUsername(dto.getUsername()).isPresent()){
+        if(userRepository.findByUsername(dto.getUsername()).isPresent()){
             throw new ValidationException("User with this username already exists");
         }
 
@@ -47,7 +45,7 @@ public class UserServiceImpl implements UserService {
         after i complete security feature , i'm gonna use jpa auditing to set
         createdBy
  */
-        return userMapper.toDto(userRepositroy.save(user));
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
@@ -56,12 +54,12 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("You cannot update the Super Admin data");
         }
 
-        User user = userRepositroy.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Unique checks
         if(dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())){
-            if(userRepositroy.findByEmail(dto.getEmail()).isPresent())
+            if(userRepository.findByEmail(dto.getEmail()).isPresent())
                 throw new ValidationException("Email already taken");
         }
 
@@ -73,12 +71,12 @@ public class UserServiceImpl implements UserService {
             user.setPassword(PasswordUtil.hash(dto.getPassword()));
         }
 
-        return userMapper.toDto(userRepositroy.save(user));
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
     public UserDtoResponse getById(Long id) {
-        return userRepositroy.findById(id)
+        return userRepository.findById(id)
                 .map(userMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
@@ -86,7 +84,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserDtoResponse> getAllIncludingDeleted(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return userRepositroy.findAll(pageable)
+        return userRepository.findAll(pageable)
                 .map(userMapper::toDto);
     }
 
@@ -106,7 +104,7 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(page, size, sort);
 
         // Call the repository with ALL parameters
-        return userRepositroy.findAllWithFilters(role, startDate, endDate, includeDeleted, pageable)
+        return userRepository.findAllWithFilters(role, startDate, endDate, includeDeleted, pageable)
                 .map(userMapper::toDto);
     }
 
@@ -114,17 +112,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
-        // FIXED LOGIC: Block only the Super Admin
-        if(id.equals(1L)){
+        if(id.equals(1L)) {
             throw new ValidationException("You cannot delete the Super Admin");
         }
 
-        User user = userRepositroy.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("User not found")
-        );
-
-        user.setDeleted(true);
-        user.setActive(false);
-        userRepositroy.save(user);
+        // This trigger the @SQLDelete update automatically!
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found");
+        }
+        userRepository.deleteById(id);
     }
 }
