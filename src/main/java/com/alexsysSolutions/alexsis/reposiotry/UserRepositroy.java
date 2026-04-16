@@ -1,5 +1,6 @@
 package com.alexsysSolutions.alexsis.reposiotry;
 
+import com.alexsysSolutions.alexsis.enums.UserRole;
 import com.alexsysSolutions.alexsis.model.User;
 
 import org.springframework.data.domain.Page;
@@ -12,21 +13,18 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 @Repository
 public interface UserRepositroy extends JpaRepository<User, Long> {
-    Optional<User>findByEmail(String email);
-    Optional<User>findById(Long id);
-    Optional<User>findByUsername(String username);
-    List<User> findByActive(boolean active);
-    boolean existsByActive(boolean active);
+    Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(String username);
 
-    @Query("SELECT u FROM User u WHERE u.deleted = false " +
+    @Query("SELECT u FROM User u WHERE " +
+            "(:includeDeleted = true OR u.deleted = false) " + // Logic to show/hide deleted
             "AND (:role IS NULL OR u.role = :role) " +
-            "AND (:startDate IS NULL OR u.createdAt >= :startDate) " +
-            "AND (:endDate IS NULL OR u.createdAt <= :endDate)")
+            "AND (cast(:startDate as timestamp) IS NULL OR u.createdAt >= :startDate) " +
+            "AND (cast(:endDate as timestamp) IS NULL OR u.createdAt <= :endDate)")
     Page<User> findAllWithFilters(
-            @Param("role") String role,
+            @Param("role") UserRole role,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             @Param("includeDeleted") boolean includeDeleted,
