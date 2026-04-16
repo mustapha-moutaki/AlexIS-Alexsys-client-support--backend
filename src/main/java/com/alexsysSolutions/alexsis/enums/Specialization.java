@@ -7,5 +7,6 @@ public enum Specialization {
     SOFTWARE,
     DATA,
     AI,
-    AUTOMATION
+    AUTOMATION,
+    OTHER
 }
