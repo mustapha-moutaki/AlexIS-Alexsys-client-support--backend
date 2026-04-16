@@ -5,6 +5,7 @@ import com.alexsysSolutions.alexsis.enums.Specialization;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(name = "agents")
@@ -15,6 +16,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+
+@SQLDelete(sql = "UPDATE agents SET is_deleted = true, is_active = false WHERE id = ?")
 public class Agent extends User{
 
     @Column(name = "specialization", nullable = false)
@@ -22,9 +25,9 @@ public class Agent extends User{
     private Specialization specialization;
 
     @Column(name = "average_resolution_time")
-    private String averageResolutionTime;
+    private Integer averageResolutionTime;
     @Column(name = "performance_rating")
-    private String performanceRating;
+    private Integer performanceRating;
 
     @Column(name = "availability_status")
     @Enumerated(EnumType.STRING)

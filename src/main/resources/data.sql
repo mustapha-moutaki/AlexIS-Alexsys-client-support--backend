@@ -15,9 +15,5 @@ UPDATE agents SET specialization = 'TECHNICAL_SUPPORT' WHERE id = 2;
 INSERT INTO clients (id, registration_date, satisfaction_score)
 VALUES
     (3, '2024-01-10', 95.0);
-
--- Adjust the sequence (Important for PostgreSQL)
--- If your ID is auto-incrementing, you must update the sequence to avoid unique constraint errors on next manual create
-SELECT setval(pg_get_serial_sequence('users', 'id'), (SELECT MAX(id) FROM users));
-
-CREATE SEQUENCE IF NOT EXISTS global_seq START WITH 100 INCREMENT BY 1;
+INSERT INTO agents (id, specialization, availability_status)
+VALUES (3, 'TECHNICAL_SUPPORT', 'AVAILABLE');
