@@ -19,3 +19,5 @@ VALUES
 -- Adjust the sequence (Important for PostgreSQL)
 -- If your ID is auto-incrementing, you must update the sequence to avoid unique constraint errors on next manual create
 SELECT setval(pg_get_serial_sequence('users', 'id'), (SELECT MAX(id) FROM users));
+
+CREATE SEQUENCE IF NOT EXISTS global_seq START WITH 100 INCREMENT BY 1;
