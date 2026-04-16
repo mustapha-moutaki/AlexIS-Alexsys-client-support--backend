@@ -2,12 +2,16 @@ package com.alexsysSolutions.alexsis.dto.response.user;
 
 import com.alexsysSolutions.alexsis.enums.UserRole;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserDtoResponse {
 
     private Long id;
@@ -20,4 +24,3 @@ public class UserDtoResponse {
     private String role;
 
 }
-
