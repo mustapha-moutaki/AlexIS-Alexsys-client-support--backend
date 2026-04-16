@@ -4,6 +4,7 @@ import com.alexsysSolutions.alexsis.enums.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "users")
@@ -11,8 +12,8 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class User extends BaseEntity {
 
     @Column(name = "first_name", nullable = false)
@@ -41,9 +42,11 @@ public class User extends BaseEntity {
     @Column(name = "profile_picture", nullable = true)
     private String profilePicture;
 
+    @Builder.Default
     @Column(name = "is_active")
     private boolean active = true;
 
+    @Builder.Default
     @Column(name = "is_deleted")
     private boolean deleted = false;
 
