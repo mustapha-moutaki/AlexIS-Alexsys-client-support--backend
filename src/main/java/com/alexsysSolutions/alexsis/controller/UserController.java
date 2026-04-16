@@ -33,12 +33,13 @@ public class UserController {
             @Valid
             @RequestBody UserCreateDtoRequest dto,
             HttpServletRequest request
-            ){
+    ){
+        logger.info("st: POST /api/v1/users - Creating user with email: {}", dto.getEmail());   
         UserDtoResponse user = userService.create(dto);
         ApiResponse<UserDtoResponse>response = ApiResponse.success("user created successfully", user);
         response.setStatus(HttpStatus.CREATED.value());
         response.setPath(request.getRequestURI());
-        logger.info("User created with ID: {}", user.getId());
+        logger.info("st: User created successfully with ID: {}", user.getId());   
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -50,12 +51,13 @@ public class UserController {
             @Valid
             @RequestBody UserUpdateDtoRequest dto,
             HttpServletRequest http
-            ){
+    ){
+        logger.info("st: PATCH /api/v1/users/{} - Updating user", id);   
         UserDtoResponse user = userService.update(id, dto);
         ApiResponse<UserDtoResponse> response = ApiResponse.success("User updated successfully", user);
         response.setPath(http.getRequestURI());
         response.setStatus(HttpStatus.OK.value());
-        logger.info("User with ID {} updated", id);
+        logger.info("st: User with ID {} updated successfully", id);   
         return ResponseEntity.ok(response);
     }
 
@@ -65,11 +67,12 @@ public class UserController {
             @PathVariable Long id,
             HttpServletRequest http
     ){
+        logger.info("st: GET /api/v1/users/{} - Fetching user by id", id);   
         UserDtoResponse user = userService.getById(id);
         ApiResponse<UserDtoResponse> response = ApiResponse.success("User retrieved successfully", user);
         response.setPath(http.getRequestURI());
         response.setStatus(HttpStatus.OK.value());
-        logger.info("User with ID {} retrieved", id);
+        logger.info("st: User with ID {} retrieved successfully", id);   
         return ResponseEntity.ok(response);
     }
 
@@ -89,6 +92,8 @@ public class UserController {
             @RequestParam(defaultValue = "false") boolean includeDeleted,
             HttpServletRequest request
     ) {
+        logger.info("st: GET /api/v1/users - Fetching all users with filters. Page: {}, Size: {}, Role: {}",
+                page, size, role);   
         // the service handles all parameters
         Page<UserDtoResponse> users = userService.getAll(
                 page, size, sortBy, direction, role, startDate, endDate, includeDeleted
@@ -98,18 +103,21 @@ public class UserController {
         response.setPath(request.getRequestURI());
         response.setStatus(HttpStatus.OK.value());
 
+        logger.info("st: Retrieved {} users total", users.getTotalElements());   
         return ResponseEntity.ok(response);
     }
 
     // delete
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, HttpServletRequest http) {
+        logger.info("st: DELETE /api/v1/users/{} - Deleting user", id);   
         userService.delete(id);
 
         ApiResponse<Void> response = ApiResponse.success("User deleted successfully", null);
         response.setPath(http.getRequestURI());
         response.setStatus(HttpStatus.OK.value());
 
+        logger.info("st: User with ID {} deleted successfully", id);   
         return ResponseEntity.ok(response);
     }
 
