@@ -102,16 +102,15 @@ public class UserController {
     }
 
     // delete
-    public ResponseEntity<ApiResponse<Void>> delete(
-            @PathVariable Long id,
-            HttpServletRequest http
-    ){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, HttpServletRequest http) {
         userService.delete(id);
+
         ApiResponse<Void> response = ApiResponse.success("User deleted successfully", null);
         response.setPath(http.getRequestURI());
-        response.setStatus(HttpStatus.NO_CONTENT.value());
-        logger.info("User with ID {} deleted", id);
-        return ResponseEntity.noContent().build();
+        response.setStatus(HttpStatus.OK.value());
+
+        return ResponseEntity.ok(response);
     }
 
 }
