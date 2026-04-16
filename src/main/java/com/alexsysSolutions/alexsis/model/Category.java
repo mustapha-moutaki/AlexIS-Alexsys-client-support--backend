@@ -2,6 +2,7 @@ package com.alexsysSolutions.alexsis.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "categories")
@@ -9,7 +10,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 
 public class Category extends BaseEntity{
 
