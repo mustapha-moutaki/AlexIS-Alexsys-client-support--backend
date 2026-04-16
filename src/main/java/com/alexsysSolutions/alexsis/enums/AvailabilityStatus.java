@@ -4,5 +4,6 @@ public enum AvailabilityStatus {
     AVAILABLE,
     ONLINE,
     BUSY,
-    OFFLINE
+    OFFLINE,
+    NOT_SELECTED
 }
