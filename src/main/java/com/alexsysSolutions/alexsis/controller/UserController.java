@@ -4,6 +4,7 @@ import com.alexsysSolutions.alexsis.dto.request.user.UserCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.user.UserUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.ApiResponse;
 import com.alexsysSolutions.alexsis.dto.response.user.UserDtoResponse;
+import com.alexsysSolutions.alexsis.enums.UserRole;
 import com.alexsysSolutions.alexsis.service.UserService;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -80,19 +81,18 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String direction,
-            @RequestParam(required = false) String role,
-            @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(required = false) UserRole role,
+            @RequestParam(required = false)
+            @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false)
+            @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam(defaultValue = "false") boolean includeDeleted,
             HttpServletRequest request
     ) {
-        Page<UserDtoResponse> users;
-
-        if (includeDeleted) {
-            users = userService.getAllIncludingDeleted(page, size);
-        } else {
-            users = userService.getAll(page, size, sortBy, direction, role, startDate, endDate);
-        }
+        // the service handles all parameters
+        Page<UserDtoResponse> users = userService.getAll(
+                page, size, sortBy, direction, role, startDate, endDate, includeDeleted
+        );
 
         ApiResponse<Page<UserDtoResponse>> response = ApiResponse.success("Users retrieved", users);
         response.setPath(request.getRequestURI());
