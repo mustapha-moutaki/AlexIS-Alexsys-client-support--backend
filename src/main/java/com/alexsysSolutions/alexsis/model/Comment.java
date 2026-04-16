@@ -3,6 +3,7 @@ package com.alexsysSolutions.alexsis.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "comments")
@@ -11,6 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
+@SuperBuilder
 public class Comment extends BaseEntity{
 
     private String content;
