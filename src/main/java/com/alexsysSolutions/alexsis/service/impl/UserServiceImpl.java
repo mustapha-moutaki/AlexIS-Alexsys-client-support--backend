@@ -3,6 +3,7 @@ package com.alexsysSolutions.alexsis.service.impl;
 import com.alexsysSolutions.alexsis.dto.request.user.UserCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.user.UserUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.user.UserDtoResponse;
+import com.alexsysSolutions.alexsis.enums.UserRole;
 import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
 import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.mapper.UserMapper;
@@ -47,7 +48,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDtoResponse update(Long id, UserUpdateDtoRequest dto) {
-        // FIXED LOGIC: Only block if it is the ACTUAL Super Admin (usually ID 1)
         if(id.equals(1L)){
             throw new ValidationException("You cannot update the Super Admin data");
         }
@@ -80,24 +80,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDtoResponse> getAll(int page, int size, String sortBy, String direction,
-                                        String role, LocalDateTime startDate, LocalDateTime endDate) {
-
-        Sort sort = direction.equalsIgnoreCase("desc") ?
-                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-
-        return userRepositroy.findAllWithFilters(role, startDate, endDate, pageable)
-                .map(user -> userMapper.toDto(user));
+    public Page<UserDtoResponse> getAllIncludingDeleted(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepositroy.findAll(pageable)
+                .map(userMapper::toDto);
     }
 
     @Override
-    public Page<UserDtoResponse> getAllIncludingDeleted(int page, int size) {
-        return userRepositroy.findAll(PageRequest.of(page, size))
+    public Page<UserDtoResponse> getAll(
+            int page,
+            int size,
+            String sortBy,
+            String direction,
+            UserRole role,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            boolean includeDeleted
+    ) {
+
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // Call the repository with ALL parameters
+        return userRepositroy.findAllWithFilters(role, startDate, endDate, includeDeleted, pageable)
                 .map(userMapper::toDto);
     }
+
+
 
     @Override
     public void delete(Long id) {
