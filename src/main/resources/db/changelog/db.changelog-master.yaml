@@ -25,3 +25,5 @@ databaseChangeLog:
 #        file: db/changelog/changes/013-clients-users-fk.yml
   - include:
         file: db/changelog/changes/014-drop-user_id-column-clients-table.yml
+  - include:
+        file: db/changelog/changes/018-drop-userId-agent-table.yml
