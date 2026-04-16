@@ -11,9 +11,6 @@ import lombok.Setter;
 @Builder
 public class UserUpdateDtoRequest {
 
-    @NotNull
-    private Long id;
-
     private String firstName;
     private String lastName;
     private String email;
