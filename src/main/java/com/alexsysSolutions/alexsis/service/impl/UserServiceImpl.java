@@ -43,6 +43,10 @@ public class UserServiceImpl implements UserService {
 
         User user = userMapper.toEntity(dto);
         user.setPassword(PasswordUtil.hash(dto.getPassword()));
+/*
+        after i complete security feature , i'm gonna use jpa auditing to set
+        createdBy
+ */
         return userMapper.toDto(userRepositroy.save(user));
     }
 
