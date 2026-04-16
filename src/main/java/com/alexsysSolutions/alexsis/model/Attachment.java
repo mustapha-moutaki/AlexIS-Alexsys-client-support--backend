@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 
-@SequenceGenerator(name="attachment_seq", sequenceName = "attachment_seq", allocationSize = 5)
+//@SequenceGenerator(name="attachment_seq", sequenceName = "attachment_seq", allocationSize = 5)
 
 public class Attachment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attachment_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "file_name", nullable = false)
