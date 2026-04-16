@@ -3,6 +3,7 @@ package com.alexsysSolutions.alexsis.service;
 import com.alexsysSolutions.alexsis.dto.request.user.UserCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.user.UserUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.user.UserDtoResponse;
+import com.alexsysSolutions.alexsis.enums.UserRole;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -14,13 +15,14 @@ public interface UserService {
     void delete(Long id);
 
     Page<UserDtoResponse>getAllIncludingDeleted(int page, int size);
-    Page<UserDtoResponse> getAll(
-            int page,
-            int size,
-            String sortBy,
-            String direction,
-            String role,
-            LocalDateTime startDate,
-            LocalDateTime endDate
+  Page<UserDtoResponse> getAll(
+          int page,
+          int size,
+          String sortBy,
+          String direction,
+          UserRole role,
+          LocalDateTime startDate,
+          LocalDateTime endDate,
+          boolean includeDeleted
     );
 }
