@@ -18,15 +18,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SequenceGenerator(
-        name = "ticket_seq",
-        sequenceName = "ticket_seq",
-        allocationSize = 50
-)
+//@SequenceGenerator(
+//        name = "ticket_seq",
+//        sequenceName = "ticket_seq",
+//        allocationSize = 50
+//)
 public class Ticket {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ticket_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "title", nullable = false)
