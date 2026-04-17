@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 019-add-updated-at-to-categories
+      author: mustaphamoutaki
+      changes:
+        - addColumn:
+            tableName: categories
+            columns:
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
