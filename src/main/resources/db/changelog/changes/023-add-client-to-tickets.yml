@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 023-add-client-to-tickets
+      author: mustaphamoutaki
+      changes:
+        - addColumn:
+            tableName: tickets
+            columns:
+              - column:
+                  name: client_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                  defaultValueNumeric: 1

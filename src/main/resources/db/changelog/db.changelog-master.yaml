@@ -32,3 +32,12 @@ databaseChangeLog:
       file: db/changelog/changes/019-add-updated-at-to-categories.yml
   - include:
       file: db/changelog/changes/020-fix-created-by-categories-table.yml
+  - include:
+      file: db/changelog/changes/021-update-tickets-table.yml
+
+  - include:
+      file: db/changelog/changes/022-fix-ticket-types.yml
+  - include:
+      file: db/changelog/changes/023-add-client-to-tickets.yml
+  - include:
+      file: db/changelog/changes/024-fix-created-by-type.yml
