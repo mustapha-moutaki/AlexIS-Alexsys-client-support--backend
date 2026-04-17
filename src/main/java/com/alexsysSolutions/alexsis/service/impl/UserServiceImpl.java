@@ -14,8 +14,8 @@ import com.alexsysSolutions.alexsis.util.PasswordUtil;
 import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;  //  Added Logger import
-import org.slf4j.LoggerFactory;  //  Added LoggerFactory import
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public UserDtoResponse create(UserCreateDtoRequest dto) {

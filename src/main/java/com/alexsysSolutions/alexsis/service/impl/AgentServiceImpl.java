@@ -4,7 +4,7 @@ import com.alexsysSolutions.alexsis.dto.request.agent.AgentCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.agent.AgentDtoResponse;
 import com.alexsysSolutions.alexsis.enums.AvailabilityStatus;
-import com.alexsysSolutions.alexsis.enums.UserRole;  // st: Added import for UserRole
+import com.alexsysSolutions.alexsis.enums.UserRole;
 import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
 import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.mapper.AgentMapper;
@@ -30,7 +30,7 @@ public class AgentServiceImpl implements AgentService {
     private final AgentRepository agentRepository;
     private final AgentMapper agentMapper;
     private final UserMapper userMapper;
-    private final Logger logger = LoggerFactory.getLogger(AgentServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AgentServiceImpl.class);
 
     @Override
     public AgentDtoResponse create(AgentCreateDtoRequest dto) {
@@ -43,7 +43,7 @@ public class AgentServiceImpl implements AgentService {
             );
         }
         if(agentRepository.findByUsername(dto.getUsername()).isPresent()){
-            logger.warn("st: Agent with username already exists: {}", dto.getUsername());
+            logger.warn("Agent with username already exists: {}", dto.getUsername());
             throw new ValidationException(
                     String.format("Agent with this username: %s already exists", dto.getUsername())
             );
@@ -58,16 +58,16 @@ public class AgentServiceImpl implements AgentService {
             createdBy in the security part
          */
         Agent savedAgent = agentRepository.save(agent);
-        logger.info("st: Agent created successfully with id: {}", savedAgent.getId());
+        logger.info("Agent created successfully with id: {}", savedAgent.getId());
         return agentMapper.toDto(savedAgent);
     }
 
     @Override
     public AgentDtoResponse update(Long id, AgentUpdateDtoRequest dto) {
-        logger.info("st: Updating agent with id: {}", id);
+        logger.info("Updating agent with id: {}", id);
         Agent agent = agentRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("st: Agent not found with id: {}", id);
+                    logger.error("Agent not found with id: {}", id);
                     return new ValidationException(
                             String.format("Agent with id: %d not found", id)
                     );
@@ -78,7 +78,7 @@ public class AgentServiceImpl implements AgentService {
             boolean emailExists = agentRepository.findByEmail(dto.getEmail()).isPresent();
 
             if (emailExists) {
-                logger.warn("st: Email already in use: {}", dto.getEmail());
+                logger.warn("Email already in use: {}", dto.getEmail());
                 throw new ValidationException(
                         String.format("Email %s is already used by another user", dto.getEmail())
                 );
@@ -88,31 +88,31 @@ public class AgentServiceImpl implements AgentService {
 
         if(dto.getPassword() != null){
             agent.setPassword(PasswordUtil.hash(dto.getPassword()));
-            logger.debug("st: Agent password updated");
+            logger.debug("Agent password updated");
         }
         agentMapper.updateEntity(dto, agent);
         Agent savedAgent = agentRepository.save(agent);
-        logger.info("st: Agent updated successfully with id: {}", id);
+        logger.info("Agent updated successfully with id: {}", id);
         return agentMapper.toDto(savedAgent);
 
     }
 
     @Override
     public Page<AgentDtoResponse> getAll(int page, int size) {
-        logger.info("st: Fetching all agents - page: {}, size: {}", page, size);  // st: Added logging
+        logger.info("Fetching all agents - page: {}, size: {}", page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<AgentDtoResponse> result = agentRepository.findAll(pageable)
-                .map(agentMapper::toDto);  // st: Changed lambda to method reference (cleaner)
-        logger.info("st: Retrieved {} agents", result.getTotalElements());  // st: Added logging
+                .map(agentMapper::toDto);  // Changed lambda to method reference (cleaner)
+        logger.info("Retrieved {} agents", result.getTotalElements());
         return result;
     }
 
     @Override
     public AgentDtoResponse getById(Long id) {
-        logger.info("st: Fetching agent with id: {}", id);  // st: Added logging
+        logger.info("Fetching agent with id: {}", id);
         Agent agent = agentRepository.findById(id).orElseThrow(
                 ()-> {
-                    logger.error("st: Agent not found with id: {}", id);  // st: Added logging
+                    logger.error("Agent not found with id: {}", id);
                     return new ResourceNotFoundException("agent not found ");
                 }
         );
@@ -121,14 +121,14 @@ public class AgentServiceImpl implements AgentService {
 
     @Override
     public void delete(Long id) {
-        logger.info("st: Deleting agent with id: {}", id);  // st: Added logging
+        logger.info("Deleting agent with id: {}", id);
         Agent agent = agentRepository.findById(id).orElseThrow(
                 ()-> {
-                    logger.error("st: Agent not found with id: {}", id);  // st: Added logging
+                    logger.error("Agent not found with id: {}", id);
                     return new ResourceNotFoundException("agent not found ");
                 }
         );
         agentRepository.delete(agent);
-        logger.info("st: Agent deleted successfully with id: {}", id);  // st: Added logging
+        logger.info("Agent deleted successfully with id: {}", id);
     }
 }
