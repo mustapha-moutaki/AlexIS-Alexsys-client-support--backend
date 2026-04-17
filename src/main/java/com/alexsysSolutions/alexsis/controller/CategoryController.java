@@ -4,6 +4,8 @@ import com.alexsysSolutions.alexsis.dto.request.category.CategoryDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.Category.CategoryDtoResponse;
 import com.alexsysSolutions.alexsis.dto.response.ApiResponse;
 import com.alexsysSolutions.alexsis.service.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +19,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
+@Tag(name = "category managment", description = "endpoints for managing categories")
 public class CategoryController {
 
     private final CategoryService categoryService;
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     // Create a new category
+    @Operation(summary = "create new category")
     @PostMapping
     public ResponseEntity<ApiResponse<CategoryDtoResponse>> create(
             @Valid
@@ -43,6 +47,7 @@ public class CategoryController {
         }
     }
 
+    @Operation(summary = "update category")
     // Update an existing category
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<CategoryDtoResponse>> update(
@@ -65,6 +70,7 @@ public class CategoryController {
         }
     }
 
+    @Operation(summary = "get category")
     // Get category by id
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CategoryDtoResponse>> getById(
@@ -85,6 +91,7 @@ public class CategoryController {
         }
     }
 
+    @Operation(summary = "get List of categories")
     // Get all categories with pagination and search
     @GetMapping
     public ResponseEntity<ApiResponse<Page<CategoryDtoResponse>>> getAll(
@@ -108,6 +115,7 @@ public class CategoryController {
         }
     }
 
+    @Operation(summary = "delete category")
     // Delete a category
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
