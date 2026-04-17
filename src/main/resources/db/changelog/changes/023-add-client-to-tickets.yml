@@ -2,6 +2,12 @@ databaseChangeLog:
   - changeSet:
       id: 023-add-client-to-tickets
       author: mustaphamoutaki
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            columnExists:
+              tableName: tickets
+              columnName: client_id
       changes:
         - addColumn:
             tableName: tickets
