@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 public class UserController {
 
     private final UserService userService;
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     // create
     @PostMapping
