@@ -5,6 +5,8 @@ import com.alexsysSolutions.alexsis.dto.request.agent.AgentUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.ApiResponse;
 import com.alexsysSolutions.alexsis.dto.response.agent.AgentDtoResponse;
 import com.alexsysSolutions.alexsis.service.AgentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/agents")
+@Tag(name = "Agent Management", description = "Endpoints for managing agents")
 public class AgentController {
 
     private final AgentService agentService;
     private static final Logger logger = LoggerFactory.getLogger(AgentController.class);
 
+    @Operation(summary = "Create a new agent", description = "Creates a new agent record in the system")
     @PostMapping
     public ResponseEntity<ApiResponse<AgentDtoResponse>> create(
             @Valid
@@ -44,6 +48,7 @@ public class AgentController {
         }
     }
 
+    @Operation(summary = "Update an agent", description = "Updates specific fields of an existing agent by ID")
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<AgentDtoResponse>> update(
             @PathVariable Long id,
@@ -67,6 +72,7 @@ public class AgentController {
     }
 
 
+    @Operation(summary = "Get all agents", description = "Retrieves a paginated list of all agents")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<AgentDtoResponse>>> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -87,6 +93,7 @@ public class AgentController {
         }
     }
 
+    @Operation(summary = "Get agent by ID", description = "Retrieves a single agent's details by their unique ID")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<AgentDtoResponse>> getById(
             @PathVariable Long id,
@@ -107,6 +114,7 @@ public class AgentController {
     }
 
 
+    @Operation(summary = "Delete an agent", description = "Removes an agent from the system by ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long id,
