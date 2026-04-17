@@ -6,6 +6,8 @@ import com.alexsysSolutions.alexsis.dto.response.ApiResponse;
 import com.alexsysSolutions.alexsis.dto.response.user.UserDtoResponse;
 import com.alexsysSolutions.alexsis.enums.UserRole;
 import com.alexsysSolutions.alexsis.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -22,12 +24,14 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
+@Tag(name="users management", description = "users management endpoints")
 public class UserController {
 
     private final UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     // create
+    @Operation(summary = "create new user admin")
     @PostMapping
     public ResponseEntity<ApiResponse<UserDtoResponse>>create(
             @Valid
@@ -44,6 +48,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "update user data")
     // update
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<UserDtoResponse>>update(
@@ -61,6 +66,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "get single user by id")
     // getById
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserDtoResponse>>getById(
@@ -77,6 +83,7 @@ public class UserController {
     }
 
 
+    @Operation(summary = "Get all users")
     // get all
     @GetMapping
     public ResponseEntity<ApiResponse<Page<UserDtoResponse>>> getAll(
@@ -107,6 +114,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Delete user")
     // delete
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, HttpServletRequest http) {
