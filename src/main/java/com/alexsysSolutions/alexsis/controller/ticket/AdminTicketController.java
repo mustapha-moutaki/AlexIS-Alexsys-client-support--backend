@@ -39,7 +39,7 @@ public class AdminTicketController {
         ApiResponse<TicketDetailDtoResponse> response = ApiResponse.success("Ticket Created successfully", savedTicket);
         response.setPath(http.getRequestURI());
         response.setStatus(HttpStatus.CREATED.value());
-
+        logger.info("return response- ticket cereated successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
 
