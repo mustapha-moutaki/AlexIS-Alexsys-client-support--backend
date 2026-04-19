@@ -12,6 +12,8 @@ import lombok.Setter;
 @Builder
 public class TicketCreateCommand {
 
+    private Long id;
+
     private String title;
     private String description;
 
