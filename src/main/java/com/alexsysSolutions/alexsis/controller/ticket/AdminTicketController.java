@@ -2,47 +2,164 @@ package com.alexsysSolutions.alexsis.controller.ticket;
 
 import com.alexsysSolutions.alexsis.dto.request.ticket.TicketCreateByAdminDto;
 import com.alexsysSolutions.alexsis.dto.request.ticket.TicketCreateCommand;
+import com.alexsysSolutions.alexsis.dto.request.ticket.TicketUpdateByAdminDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.ApiResponse;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
+import com.alexsysSolutions.alexsis.dto.response.ticket.TicketSummaryDtoResponse;
 import com.alexsysSolutions.alexsis.mapper.TicketCommandMapper;
 import com.alexsysSolutions.alexsis.mapper.TicketMapper;
 import com.alexsysSolutions.alexsis.service.TicketService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/tickets")
+@Tag(name = "Admin Ticket Management", description = "Endpoints for admin ticket management")
 public class AdminTicketController {
     private final TicketService ticketService;
-    private final TicketMapper ticketMapper;
     private final TicketCommandMapper ticketCommandMapper;
-    private final Logger logger = LoggerFactory.getLogger(AdminTicketController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdminTicketController.class);
+
+    // st: Create a new ticket (admin can assign to agents and clients)
+    @Operation(summary = "Create a new ticket as admin", description = "Create a ticket with full control over status, priority, assignment, etc.")
     @PostMapping
-    public ResponseEntity<ApiResponse<TicketDetailDtoResponse>>create(
+    public ResponseEntity<ApiResponse<TicketDetailDtoResponse>> create(
             @Valid
             @RequestBody TicketCreateByAdminDto dto,
             HttpServletRequest http
-            ){
-        logger.info("create ticket by admin {}", dto);
-        TicketCreateCommand command = ticketCommandMapper.fromAdminDto(dto);
-        TicketDetailDtoResponse savedTicket = ticketService.create(command);
-        ApiResponse<TicketDetailDtoResponse> response = ApiResponse.success("Ticket Created successfully", savedTicket);
-        response.setPath(http.getRequestURI());
-        response.setStatus(HttpStatus.CREATED.value());
-        logger.info("return response- ticket cereated successfully");
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-
+    ) {
+        logger.info("st: POST /api/v1/admin/tickets - Creating ticket with title: {}", dto.getTitle());
+        try {
+            TicketCreateCommand command = ticketCommandMapper.fromAdminDto(dto);
+            TicketDetailDtoResponse savedTicket = ticketService.create(command);
+            ApiResponse<TicketDetailDtoResponse> response = ApiResponse.success("Ticket created successfully", savedTicket);
+            response.setPath(http.getRequestURI());
+            response.setStatus(HttpStatus.CREATED.value());
+            logger.info("st: Ticket created successfully with ID: {}", savedTicket.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            logger.error("st: Error creating ticket", e);
+            throw e;
+        }
     }
 
+    // st: Update an existing ticket (admin can change status, priority, assignment, etc.)
+    @Operation(summary = "Update a ticket as admin", description = "Update ticket details with full control")
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<TicketSummaryDtoResponse>> update(
+            @PathVariable Long id,
+            @Valid
+            @RequestBody TicketUpdateByAdminDtoRequest dto,
+            HttpServletRequest http
+    ) {
+        logger.info("st: PATCH /api/v1/admin/tickets/{} - Updating ticket", id);
+        try {
+            TicketCreateCommand command = ticketCommandMapper.fromAdminUpdateDto(dto, id);
+            TicketSummaryDtoResponse updatedTicket = ticketService.update(command);
+            ApiResponse<TicketSummaryDtoResponse> response = ApiResponse.success("Ticket updated successfully", updatedTicket);
+            response.setPath(http.getRequestURI());
+            response.setStatus(HttpStatus.OK.value());
+            logger.info("st: Ticket with ID {} updated successfully", id);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("st: Error updating ticket with ID: {}", id, e);
+            throw e;
+        }
+    }
+
+    // st: Get ticket details by ID
+    @Operation(summary = "Get ticket details", description = "Retrieve full ticket details including comments and attachments")
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<TicketDetailDtoResponse>> getDetailsById(
+            @PathVariable Long id,
+            HttpServletRequest http
+    ) {
+        logger.info("st: GET /api/v1/admin/tickets/{} - Fetching ticket details", id);
+        try {
+            TicketDetailDtoResponse ticketDetail = ticketService.getDetailsById(id);
+            ApiResponse<TicketDetailDtoResponse> response = ApiResponse.success("Ticket details retrieved successfully", ticketDetail);
+            response.setPath(http.getRequestURI());
+            response.setStatus(HttpStatus.OK.value());
+            logger.info("st: Ticket with ID {} retrieved successfully", id);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("st: Error fetching ticket details with ID: {}", id, e);
+            throw e;
+        }
+    }
+
+    // st: Get all tickets (detailed view with pagination)
+    @Operation(summary = "Get all tickets (detailed)", description = "Retrieve paginated list of all tickets with full details")
+    @GetMapping("/detailed")
+    public ResponseEntity<ApiResponse<Page<TicketDetailDtoResponse>>> getAllDetailed(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest http
+    ) {
+        logger.info("st: GET /api/v1/admin/tickets/detailed - Fetching all tickets (detailed) - page: {}, size: {}", page, size);
+        try {
+            Page<TicketDetailDtoResponse> tickets = ticketService.getAllTicketDetailed(page, size);
+            ApiResponse<Page<TicketDetailDtoResponse>> response = ApiResponse.success("Tickets retrieved successfully", tickets);
+            response.setPath(http.getRequestURI());
+            response.setStatus(HttpStatus.OK.value());
+            logger.info("st: Retrieved {} total tickets (detailed)", tickets.getTotalElements());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("st: Error fetching all tickets (detailed)", e);
+            throw e;
+        }
+    }
+
+    // st: Get all tickets (summary view with pagination)
+    @Operation(summary = "Get all tickets (summary)", description = "Retrieve paginated list of all tickets with summary view")
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<TicketSummaryDtoResponse>>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest http
+    ) {
+        logger.info("st: GET /api/v1/admin/tickets - Fetching all tickets (summary) - page: {}, size: {}", page, size);
+        try {
+            Page<TicketSummaryDtoResponse> tickets = ticketService.getAllTicketsSummary(page, size);
+            ApiResponse<Page<TicketSummaryDtoResponse>> response = ApiResponse.success("Tickets retrieved successfully", tickets);
+            response.setPath(http.getRequestURI());
+            response.setStatus(HttpStatus.OK.value());
+            logger.info("st: Retrieved {} total tickets (summary)", tickets.getTotalElements());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("st: Error fetching all tickets (summary)", e);
+            throw e;
+        }
+    }
+
+    // st: Delete a ticket
+    @Operation(summary = "Delete a ticket", description = "Remove a ticket from the system")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(
+            @PathVariable Long id,
+            HttpServletRequest http
+    ) {
+        logger.info("st: DELETE /api/v1/admin/tickets/{} - Deleting ticket", id);
+        try {
+            ticketService.delete(id);
+            ApiResponse<Void> response = ApiResponse.success("Ticket deleted successfully", null);
+            response.setPath(http.getRequestURI());
+            response.setStatus(HttpStatus.OK.value());
+            logger.info("st: Ticket with ID {} deleted successfully", id);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("st: Error deleting ticket with ID: {}", id, e);
+            throw e;
+        }
+    }
 }
