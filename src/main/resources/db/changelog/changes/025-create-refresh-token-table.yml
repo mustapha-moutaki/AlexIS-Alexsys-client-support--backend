@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 025-create-refresh-token-table
+      author: mustapha-moutaki
+      changes:
+        - createTable:
+            tableName: refresh_token
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: revoked
+                  type: boolean
+
+              - column:
+                  name: expiryDate
+                  type: datetime
