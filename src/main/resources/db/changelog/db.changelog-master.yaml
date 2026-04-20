@@ -41,3 +41,6 @@ databaseChangeLog:
       file: db/changelog/changes/023-add-client-to-tickets.yml
   - include:
       file: db/changelog/changes/024-fix-created-by-type.yml
+
+  - include:
+      file: db/changelog/changes/025-create-refresh-token-table.yml
