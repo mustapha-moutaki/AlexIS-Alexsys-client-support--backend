@@ -1,0 +1,16 @@
+databaseChangeLog:
+      - changeSet:
+          id: 022-fix-ticket-priority
+          author: mustaphamoutaki
+          changes:
+            - dropColumn:
+                tableName: tickets
+                columnName: priority
+            - addColumn:
+                tableName: tickets
+                columns:
+                  - column:
+                      name: priority
+                      type: varchar(30)
+                      constraints:
+                        nullable: false

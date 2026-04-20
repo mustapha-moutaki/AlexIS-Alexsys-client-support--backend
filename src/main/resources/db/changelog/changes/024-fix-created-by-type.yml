@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 024-fix-created-by-type
+      author: mustaphamoutaki
+      changes:
+        - modifyDataType:
+            tableName: tickets
+            columnName: created_by
+            newDataType: varchar(50)
