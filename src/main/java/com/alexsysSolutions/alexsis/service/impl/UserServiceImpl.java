@@ -9,6 +9,7 @@ import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.mapper.UserMapper;
 import com.alexsysSolutions.alexsis.model.User;
 import com.alexsysSolutions.alexsis.reposiotry.UserRepository;
+import com.alexsysSolutions.alexsis.security.CustomUserDetails;
 import com.alexsysSolutions.alexsis.service.UserService;
 import com.alexsysSolutions.alexsis.util.PasswordUtil;
 import jakarta.transaction.Transactional;
@@ -20,6 +21,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,7 +32,7 @@ import java.time.LocalDateTime;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -181,5 +185,20 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(id);
         logger.info("User deleted successfully with id: {}", id);
+    }
+
+    // st: Implementing UserDetailsService to provide user details for Spring Security authentication
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        logger.info("Loading user details for email: {}", username);
+
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> {
+                    logger.error("User not found with email: {}", username);
+                    return new UsernameNotFoundException("User not found with email: " + username);
+                });
+
+        logger.debug("User found successfully with email: {}", username);
+        return new CustomUserDetails(user);
     }
 }
