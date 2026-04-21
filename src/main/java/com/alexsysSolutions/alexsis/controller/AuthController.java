@@ -26,7 +26,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request));
     }
 
-   // st: Refresh token endpoint - generate new access token using refresh token
+   // Refresh token endpoint - generate new access token using refresh token
     @PostMapping("/refresh")
     @Operation(summary = "Refresh Access Token", description = "Generate new access token using valid refresh token")
     public ResponseEntity<AuthDtoResponse> refreshToken(
