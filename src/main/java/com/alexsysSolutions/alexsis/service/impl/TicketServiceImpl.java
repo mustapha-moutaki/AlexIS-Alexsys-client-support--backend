@@ -42,65 +42,52 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketDetailDtoResponse create(TicketCreateCommand command) {
-        logger.info("Creating ticket with title: {}", command.getTitle());
 
-        // validate+ fetch relations
         Category category = categoryRepository.findById(command.getCategoryId())
-                .orElseThrow(()->new ResourceNotFoundException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-        /**
-         *  Check the role of the current user if it's admin we take the id from the response
-         *   and if it's client we take his authentification id
-         */
+        Long currentUserId = currentUser.getUserId();
         User client;
+
+        // CLIENT creates own ticket
         if (currentUser.getRole() == UserRole.CLIENT) {
-            client = userRepository.findByEmail(currentUser.getEmail())
+            client = userRepository.findById(currentUserId)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        } else {
-            // Admin creates ticket for a client
+        }
+        // ADMIN creates ticket for client
+        else {
             client = userRepository.findByIdAndRole(command.getClientId(), UserRole.CLIENT)
                     .orElseThrow(() -> new ResourceNotFoundException("Client not found"));
         }
 
-        User assignedTo  = null;
-        if(command.getAssignedToId() != null){
-            assignedTo = userRepository.findById(command.getAssignedToId()).orElseThrow(
-                    ()-> new ResourceNotFoundException("Assigned user not found")
-            );
-            // check if the user is agent
-            if(assignedTo.getRole() != UserRole.AGENT){
+        User assignedTo = null;
+        if (command.getAssignedToId() != null) {
+            assignedTo = userRepository.findById(command.getAssignedToId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Assigned user not found"));
+
+            if (assignedTo.getRole() != UserRole.AGENT) {
                 throw new ValidationException("Assigned user must be agent");
             }
         }
 
-        // build entity ticket
         Ticket ticket = new Ticket();
         ticket.setTitle(command.getTitle());
         ticket.setDescription(command.getDescription());
         ticket.setPriority(command.getPriority());
         ticket.setIssueType(command.getIssueType());
-
         ticket.setCategory(category);
         ticket.setClient(client);
         ticket.setAssignedTo(assignedTo);
         ticket.setCreatedBy(currentUser.getEmail());
+        ticket.setStatus(command.getStatus() != null ? command.getStatus() : TicketStatus.OPEN);
 
-        // business rules;
-        if(command.getStatus() != null){
-            ticket.setStatus(command.getStatus());
-        }else{
-            ticket.setStatus(TicketStatus.OPEN);
-        }
-
-        // timestamp
-        if(assignedTo != null){
+        if (assignedTo != null) {
             ticket.setAssignedAt(LocalDateTime.now());
         }
 
-        ticketRepository.save(ticket);
-        logger.info("Ticket created successfully with ID: {}", ticket.getId());
-        return ticketMapper.toDtoDetailsResponse(ticket);
+        return ticketMapper.toDtoDetailsResponse(ticketRepository.save(ticket));
     }
+
 
     @Override
     public TicketSummaryDtoResponse update(TicketCreateCommand command) {
@@ -189,59 +176,92 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketSummaryDtoResponse getByIdSummary(Long id) {
-        logger.info("Fetching ticket summary with ID: {}", id);
-        Ticket ticket = ticketRepository.findById(id).orElseThrow(
-                ()-> {
-                    logger.error("Ticket not found with ID: {}", id);
-                    return new ResourceNotFoundException("Ticket not found");
-                }
-        );
-        logger.debug("Ticket summary retrieved successfully for ID: {}", id);
-        return ticketMapper.toDtoSummaryResponse(ticket);
+    public TicketDetailDtoResponse getDetailsForAdmin(Long id) {
+        Ticket ticket = getTicketOrThrow(id);
+        return ticketMapper.toDtoDetailsResponse(ticket);
     }
 
+
     @Override
-    public TicketDetailDtoResponse getDetailsById(Long id) {
-        logger.info("Fetching ticket details with ID: {}", id);
-        Ticket ticket = ticketRepository.findByIdWithDetails(id).orElseThrow(
-                ()-> {
-                    logger.error("Ticket not found with ID: {}", id);
-                    return new ResourceNotFoundException("ticket not found");
-                }
-        );
-        logger.debug("Ticket details retrieved successfully for ID: {}", id);
+    public TicketDetailDtoResponse getDetailsForClient(Long id) {
+
+        Long clientId = currentUser.getUserId();
+
+        Ticket ticket = getTicketOrThrow(id);
+
+        if (!ticket.getClient().getId().equals(clientId)) {
+            throw new ValidationException("Access denied");
+        }
+
         return ticketMapper.toDtoDetailsResponse(ticket);
     }
 
     @Override
-    public Page<TicketSummaryDtoResponse> getAllTicketsSummary(int page, int size) {
-        logger.info("Fetching all tickets summary - page: {}, size: {}", page, size);
-        Pageable pageable = PageRequest.of(page , size);
-        Page<TicketSummaryDtoResponse> result = ticketRepository.findAll(pageable)
-                .map(ticketMapper::toDtoSummaryResponse);
-        logger.info("Retrieved {} total tickets (summary)", result.getTotalElements());
-        return result;
+    public TicketSummaryDtoResponse getSummaryForAdmin(Long id) {
+
+        Ticket ticket = getTicketOrThrow(id);
+
+        return ticketMapper.toDtoSummaryResponse(ticket);
     }
 
     @Override
-    public Page<TicketDetailDtoResponse> getAllTicketDetailed(int page, int size) {
-        logger.info("Fetching all tickets detailed - page: {}, size: {}", page, size);
-        Pageable pageable = PageRequest.of(page, size);
-        Page<TicketDetailDtoResponse> result = ticketRepository.findAll(pageable)
-                .map(ticketMapper::toDtoDetailsResponse);
-        logger.info("Retrieved {} total tickets (detailed)", result.getTotalElements());
-        return result;
+    public TicketSummaryDtoResponse getSummaryForClient(Long id) {
+
+        Long clientId = currentUser.getUserId();
+
+        Ticket ticket = getTicketOrThrow(id);
+
+        if (!ticket.getClient().getId().equals(clientId)) {
+            throw new ValidationException("Access denied");
+        }
+
+        return ticketMapper.toDtoSummaryResponse(ticket);
     }
+
+
+    @Override
+    public Page<TicketSummaryDtoResponse> getAllSummaryForAdmin(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return ticketRepository.findAll(pageable)
+                .map(ticketMapper::toDtoSummaryResponse);
+    }
+
+    @Override
+    public Page<TicketSummaryDtoResponse> getAllSummaryForClient(int page, int size) {
+
+        Long clientId = currentUser.getUserId();
+        Pageable pageable = PageRequest.of(page, size);
+
+        return ticketRepository.findByClientId(clientId, pageable)
+                .map(ticketMapper::toDtoSummaryResponse);
+    }
+
+    @Override
+    public Page<TicketDetailDtoResponse> getAllDetailsForAdmin(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return ticketRepository.findAll(pageable)
+                .map(ticketMapper::toDtoDetailsResponse);
+    }
+
 
     @Override
     public void delete(Long id) {
-        logger.info("Deleting ticket with ID: {}", id);
-        if(!ticketRepository.existsById(id)){
-            logger.error("Ticket not found with ID: {}", id);
-            throw new ResourceNotFoundException("Ticket not found");
+
+        Ticket ticket = getTicketOrThrow(id);
+
+        if (currentUser.getRole() == UserRole.CLIENT &&
+                !ticket.getClient().getId().equals(currentUser.getUserId())) {
+            throw new ValidationException("Not allowed");
         }
-        ticketRepository.deleteById(id);
-        logger.info("Ticket with ID {} deleted successfully", id);
+
+        ticketRepository.delete(ticket);
+    }
+
+    private Ticket getTicketOrThrow(Long id) {
+        return ticketRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
     }
 }
