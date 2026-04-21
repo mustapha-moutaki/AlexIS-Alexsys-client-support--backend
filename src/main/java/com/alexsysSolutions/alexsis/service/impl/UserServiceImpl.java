@@ -10,6 +10,7 @@ import com.alexsysSolutions.alexsis.mapper.UserMapper;
 import com.alexsysSolutions.alexsis.model.User;
 import com.alexsysSolutions.alexsis.reposiotry.UserRepository;
 import com.alexsysSolutions.alexsis.security.CustomUserDetails;
+import com.alexsysSolutions.alexsis.security.context.CurrentUserProvider;
 import com.alexsysSolutions.alexsis.service.UserService;
 import com.alexsysSolutions.alexsis.util.PasswordUtil;
 import jakarta.transaction.Transactional;
@@ -37,6 +38,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final CurrentUserProvider currentUser;
 
     @Override
     public UserDtoResponse create(UserCreateDtoRequest dto) {
@@ -78,6 +80,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         // Apply the validated targetRole (IMPORTANT: don't hardcode ADMIN here)
         user.setRole(targetRole);
+        user.setCreatedBy(currentUser.getEmail());
 
         User savedUser = userRepository.save(user);
         logger.info(" User created successfully with id: {}", savedUser.getId());
