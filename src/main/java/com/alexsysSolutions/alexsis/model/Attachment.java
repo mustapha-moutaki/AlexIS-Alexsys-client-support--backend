@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 
-//@SequenceGenerator(name="attachment_seq", sequenceName = "attachment_seq", allocationSize = 5)
 
 public class Attachment {
 
