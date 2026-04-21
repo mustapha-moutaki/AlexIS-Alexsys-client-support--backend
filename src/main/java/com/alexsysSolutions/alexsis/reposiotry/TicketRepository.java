@@ -2,6 +2,8 @@ package com.alexsysSolutions.alexsis.reposiotry;
 
 import com.alexsysSolutions.alexsis.model.Ticket;
 import org.apache.commons.text.translate.NumericEntityUnescaper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -23,4 +25,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     Optional<Ticket> findByIdWithDetails(Long id);
 
     boolean existsById(Long id);
+    Page<Ticket>findByClientId(Long id, Pageable pageable);
 }
