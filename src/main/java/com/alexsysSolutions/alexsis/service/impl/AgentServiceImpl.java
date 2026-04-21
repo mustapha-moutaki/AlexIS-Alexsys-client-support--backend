@@ -11,6 +11,7 @@ import com.alexsysSolutions.alexsis.mapper.AgentMapper;
 import com.alexsysSolutions.alexsis.mapper.UserMapper;
 import com.alexsysSolutions.alexsis.model.Agent;
 import com.alexsysSolutions.alexsis.reposiotry.AgentRepository;
+import com.alexsysSolutions.alexsis.security.context.CurrentUserProvider;
 import com.alexsysSolutions.alexsis.service.AgentService;
 import com.alexsysSolutions.alexsis.util.PasswordUtil;
 import jakarta.transaction.Transactional;
@@ -31,6 +32,7 @@ public class AgentServiceImpl implements AgentService {
     private final AgentMapper agentMapper;
     private final UserMapper userMapper;
     private static final Logger logger = LoggerFactory.getLogger(AgentServiceImpl.class);
+    private final CurrentUserProvider currentUser;
 
     @Override
     public AgentDtoResponse create(AgentCreateDtoRequest dto) {
@@ -57,6 +59,8 @@ public class AgentServiceImpl implements AgentService {
         /*
             createdBy in the security part
          */
+        agent.setCreatedBy(currentUser.getEmail());
+
         Agent savedAgent = agentRepository.save(agent);
         logger.info("Agent created successfully with id: {}", savedAgent.getId());
         return agentMapper.toDto(savedAgent);
