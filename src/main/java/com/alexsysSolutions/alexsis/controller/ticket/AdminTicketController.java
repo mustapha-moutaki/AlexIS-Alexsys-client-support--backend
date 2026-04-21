@@ -18,12 +18,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/tickets")
 @Tag(name = "Admin Ticket Management", description = "Endpoints for admin ticket management")
+@PreAuthorize("hasAnyRole('ADMIN')")
 public class AdminTicketController {
 
 
@@ -40,7 +42,7 @@ public class AdminTicketController {
             HttpServletRequest http
     ) {
         logger.info("POST /api/v1/admin/tickets - Creating ticket with title: {}", dto.getTitle());
-        try {
+
             TicketCreateCommand command = ticketCommandMapper.fromAdminDto(dto);
             TicketDetailDtoResponse savedTicket = ticketService.create(command);
             ApiResponse<TicketDetailDtoResponse> response = ApiResponse.success("Ticket created successfully", savedTicket);
@@ -48,10 +50,7 @@ public class AdminTicketController {
             response.setStatus(HttpStatus.CREATED.value());
             logger.info("Ticket created successfully with ID: {}", savedTicket.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            logger.error("Error creating ticket", e);
-            throw e;
-        }
+
     }
 
     // Update an existing ticket (admin can change status, priority, assignment, etc.)
@@ -64,7 +63,7 @@ public class AdminTicketController {
             HttpServletRequest http
     ) {
         logger.info("PATCH /api/v1/admin/tickets/{} - Updating ticket", id);
-        try {
+
             TicketCreateCommand command = ticketCommandMapper.fromAdminUpdateDto(dto, id);
             TicketSummaryDtoResponse updatedTicket = ticketService.update(command);
             ApiResponse<TicketSummaryDtoResponse> response = ApiResponse.success("Ticket updated successfully", updatedTicket);
@@ -72,10 +71,7 @@ public class AdminTicketController {
             response.setStatus(HttpStatus.OK.value());
             logger.info("Ticket with ID {} updated successfully", id);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error updating ticket with ID: {}", id, e);
-            throw e;
-        }
+
     }
 
     // Get ticket details by ID
@@ -86,17 +82,13 @@ public class AdminTicketController {
             HttpServletRequest http
     ) {
         logger.info("GET /api/v1/admin/tickets/{} - Fetching ticket details", id);
-        try {
-            TicketDetailDtoResponse ticketDetail = ticketService.getDetailsById(id);
+
+            TicketDetailDtoResponse ticketDetail = ticketService.getDetailsForAdmin(id);
             ApiResponse<TicketDetailDtoResponse> response = ApiResponse.success("Ticket details retrieved successfully", ticketDetail);
             response.setPath(http.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Ticket with ID {} retrieved successfully", id);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error fetching ticket details with ID: {}", id, e);
-            throw e;
-        }
     }
 
     // Get ticket summary by ID
@@ -107,17 +99,13 @@ public class AdminTicketController {
             HttpServletRequest http
     ) {
         logger.info("GET /api/v1/admin/tickets/{}/summary - Fetching ticket summary", id);
-        try {
-            TicketSummaryDtoResponse ticketSummary = ticketService.getByIdSummary(id);
+
+            TicketSummaryDtoResponse ticketSummary = ticketService.getSummaryForAdmin(id);
             ApiResponse<TicketSummaryDtoResponse> response = ApiResponse.success("Ticket summary retrieved successfully", ticketSummary);
             response.setPath(http.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Ticket summary with ID {} retrieved successfully", id);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error fetching ticket summary with ID: {}", id, e);
-            throw e;
-        }
     }
 
     // Get all tickets (detailed view with pagination)
@@ -129,17 +117,13 @@ public class AdminTicketController {
             HttpServletRequest http
     ) {
         logger.info("GET /api/v1/admin/tickets/detailed - Fetching all tickets (detailed) - page: {}, size: {}", page, size);
-        try {
-            Page<TicketDetailDtoResponse> tickets = ticketService.getAllTicketDetailed(page, size);
+
+            Page<TicketDetailDtoResponse> tickets = ticketService.getAllDetailsForAdmin(page, size);
             ApiResponse<Page<TicketDetailDtoResponse>> response = ApiResponse.success("Tickets retrieved successfully", tickets);
             response.setPath(http.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Retrieved {} total tickets (detailed)", tickets.getTotalElements());
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error fetching all tickets (detailed)", e);
-            throw e;
-        }
     }
 
     // Get all tickets (summary view with pagination)
@@ -151,17 +135,14 @@ public class AdminTicketController {
             HttpServletRequest http
     ) {
         logger.info("GET /api/v1/admin/tickets - Fetching all tickets (summary) - page: {}, size: {}", page, size);
-        try {
-            Page<TicketSummaryDtoResponse> tickets = ticketService.getAllTicketsSummary(page, size);
+
+            Page<TicketSummaryDtoResponse> tickets = ticketService.getAllSummaryForAdmin(page, size);
             ApiResponse<Page<TicketSummaryDtoResponse>> response = ApiResponse.success("Tickets retrieved successfully", tickets);
             response.setPath(http.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Retrieved {} total tickets (summary)", tickets.getTotalElements());
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error fetching all tickets (summary)", e);
-            throw e;
-        }
+
     }
 
     // Delete a ticket
@@ -172,16 +153,13 @@ public class AdminTicketController {
             HttpServletRequest http
     ) {
         logger.info("DELETE /api/v1/admin/tickets/{} - Deleting ticket", id);
-        try {
+
             ticketService.delete(id);
             ApiResponse<Void> response = ApiResponse.success("Ticket deleted successfully", null);
             response.setPath(http.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Ticket with ID {} deleted successfully", id);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error deleting ticket with ID: {}", id, e);
-            throw e;
-        }
+
     }
 }
