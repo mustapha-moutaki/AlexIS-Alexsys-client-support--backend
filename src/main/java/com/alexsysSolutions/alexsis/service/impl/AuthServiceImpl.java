@@ -2,6 +2,7 @@ package com.alexsysSolutions.alexsis.service.impl;
 
 import com.alexsysSolutions.alexsis.dto.request.auth.LoginDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.auth.AuthDtoResponse;
+import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
 import com.alexsysSolutions.alexsis.mapper.UserMapper;
 import com.alexsysSolutions.alexsis.model.RefreshToken;
 import com.alexsysSolutions.alexsis.model.User;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @Transactional
@@ -86,9 +89,15 @@ public class AuthServiceImpl implements AuthService {
     public void logout(String refreshToken) {
 
         RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid refresh token"));
+
+        if (token.isRevoked()) {
+            return;
+        }
 
         token.setRevoked(true);
+        token.setExpiryDate(LocalDateTime.now());
+
         refreshTokenRepository.save(token);
     }
 
