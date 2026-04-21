@@ -7,6 +7,7 @@ import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.mapper.CategoryMapper;
 import com.alexsysSolutions.alexsis.model.Category;
 import com.alexsysSolutions.alexsis.reposiotry.CategoryRepository;
+import com.alexsysSolutions.alexsis.security.context.CurrentUserProvider;
 import com.alexsysSolutions.alexsis.service.CategoryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
-
+    private final CurrentUserProvider currentUser;
     @Override
     public CategoryDtoResponse create(CategoryDtoRequest dto) {
         //  Added null check and trim for name to ensure data integrity
@@ -53,6 +54,8 @@ public class CategoryServiceImpl implements CategoryService {
         /*
         category.setCreatedBy - in the security step
          */
+        category.setCreatedBy(currentUser.getEmail());
+
         if (StringUtils.hasText(dto.getDescription())) {
             category.setDescription(dto.getDescription().trim());
         }
