@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: 027-add-created-by-to-comments-table
+      author: mustapha-moutaki
+      changes:
+        - addColumn:
+            tableName: comments
+            columns:
+              - column:
+                  name: created_by
+                  type: varchar(255)
