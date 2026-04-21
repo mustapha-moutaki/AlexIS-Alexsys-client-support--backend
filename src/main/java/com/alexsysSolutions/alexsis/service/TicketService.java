@@ -11,11 +11,16 @@ public interface TicketService {
 
     TicketSummaryDtoResponse update(TicketCreateCommand command);
 
-    TicketSummaryDtoResponse getByIdSummary(Long id);
-    TicketDetailDtoResponse getDetailsById(Long id);
+    TicketDetailDtoResponse getDetailsForAdmin(Long id);
+    TicketDetailDtoResponse getDetailsForClient(Long id);
 
-    Page<TicketSummaryDtoResponse>getAllTicketsSummary(int page, int size);
-    Page<TicketDetailDtoResponse> getAllTicketDetailed(int page, int size);
+    TicketSummaryDtoResponse getSummaryForAdmin(Long id);
+    TicketSummaryDtoResponse getSummaryForClient(Long id);
+
+    Page<TicketSummaryDtoResponse> getAllSummaryForAdmin(int page, int size);
+    Page<TicketSummaryDtoResponse> getAllSummaryForClient(int page, int size);
+
+    Page<TicketDetailDtoResponse> getAllDetailsForAdmin(int page, int size);
 
     void delete(Long id);
 }
