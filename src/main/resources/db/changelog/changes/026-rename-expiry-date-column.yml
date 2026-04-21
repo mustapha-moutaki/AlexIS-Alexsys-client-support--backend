@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 026-rename-expiry-date-column
+      author: mustapha-moutaki
+      changes:
+        - renameColumn:
+            tableName: refresh_token
+            oldColumnName: expiryDate
+            newColumnName: expiry_date
+            columnDataType: datetime
