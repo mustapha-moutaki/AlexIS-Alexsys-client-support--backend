@@ -190,7 +190,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         logger.info("User deleted successfully with id: {}", id);
     }
 
-    // st: Implementing UserDetailsService to provide user details for Spring Security authentication
+    // Implementing UserDetailsService to provide user details for Spring Security authentication
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.info("Loading user details for email: {}", username);
