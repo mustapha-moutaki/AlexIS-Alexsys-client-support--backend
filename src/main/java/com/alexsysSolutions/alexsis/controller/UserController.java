@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Tag(name="users management", description = "users management endpoints")
+@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
 public class UserController {
 
     private final UserService userService;
@@ -33,6 +35,7 @@ public class UserController {
     // create
     @Operation(summary = "create new user admin")
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<UserDtoResponse>>create(
             @Valid
             @RequestBody UserCreateDtoRequest dto,
@@ -51,6 +54,7 @@ public class UserController {
     @Operation(summary = "update user data")
     // update
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<UserDtoResponse>>update(
             @PathVariable Long id,
             @Valid
@@ -69,6 +73,7 @@ public class UserController {
     @Operation(summary = "get single user by id")
     // getById
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<UserDtoResponse>>getById(
             @PathVariable Long id,
             HttpServletRequest http
@@ -86,6 +91,7 @@ public class UserController {
     @Operation(summary = "Get all users")
     // get all
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<Page<UserDtoResponse>>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -115,8 +121,8 @@ public class UserController {
     }
 
     @Operation(summary = "Delete user")
-    // delete
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id, HttpServletRequest http) {
         logger.info("st: DELETE /api/v1/users/{} - Deleting user", id);   
         userService.delete(id);
