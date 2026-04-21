@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/client/tickets")
 @RequiredArgsConstructor
 @Tag(name = "Client Ticket Management", description = "Endpoints for client ticket management")
+@PreAuthorize("hasRole('CLIENt')")
+
 public class ClientTicketController {
 
     private final TicketService ticketService;
@@ -42,7 +46,7 @@ public class ClientTicketController {
             HttpServletRequest http
     ) {
         logger.info("POST /api/v1/client/tickets - Creating ticket by client with title: {}", dto.getTitle());
-        try {
+
             // Extract client ID from authentication principal
             // Assuming your Authentication returns a principal with getId() method
             Long clientId = currentUser.getUserId();
@@ -56,10 +60,7 @@ public class ClientTicketController {
             response.setStatus(HttpStatus.CREATED.value());
             logger.info("Ticket created successfully by client with ID: {} and ticket ID: {}", clientId, savedTicket.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            logger.error("Error creating ticket by client", e);
-            throw e;
-        }
+
     }
 
     // Update own ticket (client can only update title, description, priority, issue type - not status)
@@ -72,7 +73,7 @@ public class ClientTicketController {
             HttpServletRequest http
     ) {
         logger.info("PATCH /api/v1/client/tickets/{} - Updating ticket by client", id);
-        try {
+
             Long clientId = currentUser.getUserId();
             logger.debug("Client ID extracted: {}", clientId);
 
@@ -85,10 +86,7 @@ public class ClientTicketController {
             response.setStatus(HttpStatus.OK.value());
             logger.info("Ticket with ID {} updated successfully by client {}", id, clientId);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error updating ticket with ID: {}", id, e);
-            throw e;
-        }
+
     }
 
     // Get own ticket details
@@ -99,11 +97,11 @@ public class ClientTicketController {
             HttpServletRequest http
     ) {
         logger.info("GET /api/v1/client/tickets/{} - Fetching ticket details by client", id);
-        try {
+
             Long clientId = currentUser.getUserId();
             logger.debug("Client ID extracted: {}", clientId);
 
-            TicketDetailDtoResponse ticketDetail = ticketService.getDetailsById(id);
+            TicketDetailDtoResponse ticketDetail = ticketService.getDetailsForClient(id);
 
             // Verify that the client owns this ticket
             // This should be handled in the service layer with authorization
@@ -112,39 +110,8 @@ public class ClientTicketController {
             response.setStatus(HttpStatus.OK.value());
             logger.info("Ticket with ID {} retrieved successfully by client {}", id, clientId);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error fetching ticket details with ID: {}", id, e);
-            throw e;
-        }
     }
 
-    // Get all client's own tickets (detailed view)
-    @Operation(summary = "Get my tickets (detailed)", description = "Retrieve all tickets created by the client with full details")
-    @GetMapping("/my-tickets/detailed")
-    public ResponseEntity<ApiResponse<Page<TicketDetailDtoResponse>>> getMyTicketsDetailed(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            Authentication authentication,
-            HttpServletRequest http
-    ) {
-        logger.info("GET /api/v1/client/tickets/my-tickets/detailed - Fetching client's tickets (detailed) - page: {}, size: {}", page, size);
-        try {
-            Long clientId = currentUser.getUserId();
-            logger.debug("Client ID extracted: {}", clientId);
-
-            // This should be implemented in the service to filter by clientId
-            Page<TicketDetailDtoResponse> tickets = ticketService.getAllTicketDetailed(page, size);
-
-            ApiResponse<Page<TicketDetailDtoResponse>> response = ApiResponse.success("Tickets retrieved successfully", tickets);
-            response.setPath(http.getRequestURI());
-            response.setStatus(HttpStatus.OK.value());
-            logger.info("Retrieved {} tickets (detailed) for client {}", tickets.getTotalElements(), clientId);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error fetching client's tickets (detailed)", e);
-            throw e;
-        }
-    }
 
     // Get all client's own tickets (summary view)
     @Operation(summary = "Get my tickets (summary)", description = "Retrieve all tickets created by the client with summary view")
@@ -156,22 +123,18 @@ public class ClientTicketController {
             HttpServletRequest http
     ) {
         logger.info("GET /api/v1/client/tickets - Fetching client's tickets (summary) - page: {}, size: {}", page, size);
-        try {
+
             Long clientId = currentUser.getUserId();
             logger.debug("Client ID extracted: {}", clientId);
 
             // This should be implemented in the service to filter by clientId
-            Page<TicketSummaryDtoResponse> tickets = ticketService.getAllTicketsSummary(page, size);
+            Page<TicketSummaryDtoResponse> tickets = ticketService.getAllSummaryForClient(page, size);
 
             ApiResponse<Page<TicketSummaryDtoResponse>> response = ApiResponse.success("Tickets retrieved successfully", tickets);
             response.setPath(http.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Retrieved {} tickets (summary) for client {}", tickets.getTotalElements(), clientId);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error fetching client's tickets (summary)", e);
-            throw e;
-        }
     }
 
 }
