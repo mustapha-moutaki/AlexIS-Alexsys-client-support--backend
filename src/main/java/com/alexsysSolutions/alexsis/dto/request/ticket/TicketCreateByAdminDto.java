@@ -27,10 +27,10 @@ public class TicketCreateByAdminDto {
 
     @NotNull
     private IssueType issueType;
-    @NotBlank(message = "category is required")
+    @NotNull(message = "category is required")
     private Long categoryId;
-    @NotBlank(message = "client is missing")
+    @NotNull(message = "client is missing")
     private Long clientId;
-    @NotBlank(message = "assignTo filed is required")
+    @NotNull(message = "assignTo filed is required")
     private Long assignedToId;
 }
