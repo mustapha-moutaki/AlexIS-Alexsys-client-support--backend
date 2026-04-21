@@ -36,17 +36,13 @@ public class CategoryController {
             HttpServletRequest request
     ) {
         logger.info("POST /api/v1/categories - Creating category with name: {}", dto.getName());
-        try {
+
             CategoryDtoResponse category = categoryService.create(dto);
             ApiResponse<CategoryDtoResponse> response = ApiResponse.success("Category created successfully", category);
             response.setStatus(HttpStatus.CREATED.value());
             response.setPath(request.getRequestURI());
             logger.info("Category created successfully with ID: {}", category.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            logger.error("Error creating category", e);
-            throw e;
-        }
     }
 
     @Operation(summary = "update category")
@@ -59,17 +55,14 @@ public class CategoryController {
             HttpServletRequest request
     ) {
         logger.info("PATCH /api/v1/categories/{} - Updating category", id);
-        try {
+
             CategoryDtoResponse category = categoryService.update(id, dto);
             ApiResponse<CategoryDtoResponse> response = ApiResponse.success("Category updated successfully", category);
             response.setPath(request.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Category with ID {} updated successfully", id);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error updating category with id: {}", id, e);
-            throw e;
-        }
+
     }
 
     @Operation(summary = "get category")
@@ -80,17 +73,14 @@ public class CategoryController {
             HttpServletRequest request
     ) {
         logger.info("GET /api/v1/categories/{} - Fetching category by id", id);
-        try {
+
             CategoryDtoResponse category = categoryService.getById(id);
             ApiResponse<CategoryDtoResponse> response = ApiResponse.success("Category retrieved successfully", category);
             response.setPath(request.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Category with ID {} retrieved successfully", id);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error fetching category with id: {}", id, e);
-            throw e;
-        }
+
     }
 
     @Operation(summary = "get List of categories")
@@ -104,17 +94,14 @@ public class CategoryController {
     ) {
         logger.info("GET /api/v1/categories - Fetching all categories with page: {}, size: {}, searchKeyword: {}",
                 page, size, searchKeyword);
-        try {
+
             Page<CategoryDtoResponse> categories = categoryService.getAll(page, size, searchKeyword);
             ApiResponse<Page<CategoryDtoResponse>> response = ApiResponse.success("Categories retrieved successfully", categories);
             response.setPath(request.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Retrieved {} total categories", categories.getTotalElements());
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error fetching categories", e);
-            throw e;
-        }
+
     }
 
     @Operation(summary = "delete category")
@@ -125,17 +112,14 @@ public class CategoryController {
             HttpServletRequest request
     ) {
         logger.info("DELETE /api/v1/categories/{} - Deleting category", id);
-        try {
+
             categoryService.delete(id);
             ApiResponse<Void> response = ApiResponse.success("Category deleted successfully", null);
             response.setPath(request.getRequestURI());
             response.setStatus(HttpStatus.OK.value());
             logger.info("Category with ID {} deleted successfully", id);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            logger.error("Error deleting category with id: {}", id, e);
-            throw e;
-        }
+
     }
 }
 

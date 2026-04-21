@@ -7,26 +7,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.access.AccessDeniedException;
 
 @RestControllerAdvice
+public class GlobalExceptionHandler {
 
-public class GlobalExceptionHandler extends RuntimeException {
-
-    // 400 - validation error
+    // 400 - Validation error (DTO validation)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleValidationException(
             MethodArgumentNotValidException ex,
-            HttpServletRequest reqeust
-            ){
+            HttpServletRequest request
+    ) {
         String message = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(e->e.getField() + " " + e.getDefaultMessage())
+                .map(e -> e.getField() + " " + e.getDefaultMessage())
                 .findFirst()
-                .orElse(ex.getMessage());
-        return ResponseEntity.badRequest().body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message, reqeust.getRequestURI()));
-    }
+                .orElse("Validation error");
 
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(
+                        HttpStatus.BAD_REQUEST.value(),
+                        message,
+                        request.getRequestURI()
+                ));
+    }
 
     // 404 - Resource not found
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -34,59 +40,104 @@ public class GlobalExceptionHandler extends RuntimeException {
             ResourceNotFoundException ex,
             HttpServletRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI()));
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(
+                        HttpStatus.NOT_FOUND.value(),
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
     }
 
     // 422 - Business rule violation
     @ExceptionHandler(BusinessRuleException.class)
-    public ResponseEntity<ApiResponse<Object>> handleBusinessRule(BusinessRuleException ex,
-                                                                  HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(ApiResponse.error(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage(), request.getRequestURI()));
+    public ResponseEntity<ApiResponse<Object>> handleBusinessRule(
+            BusinessRuleException ex,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(ApiResponse.error(
+                        HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
     }
 
-
-    //400 - Custom validation
+    // 400 - Custom validation
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ApiResponse<Object>> handleCustomValidation(
             ValidationException ex,
             HttpServletRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), request.getRequestURI()));
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
     }
 
-    // 401 - Unauthorized
+    // 401 - Unauthorized (not logged in / invalid token)
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ApiResponse<Object>> handleUnauthorized(
             UnauthorizedException ex,
             HttpServletRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), request.getRequestURI()));
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
     }
 
-
-    // 403 - Forbidden
+    // 403 - Forbidden (no permission)
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ApiResponse<Object>> handleForbidden(
             ForbiddenException ex,
             HttpServletRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error(HttpStatus.FORBIDDEN.value(), ex.getMessage(), request.getRequestURI()));
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(
+                        HttpStatus.FORBIDDEN.value(),
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
     }
 
-    // 500 - Internal server error (catch-all)
+    // 403 - Spring Security Access Denied
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDenied(
+            AccessDeniedException ex,
+            HttpServletRequest request
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(
+                        HttpStatus.FORBIDDEN.value(),
+                        "Access denied",
+                        request.getRequestURI()
+                ));
+    }
+
+    // 500 - Generic error (SAFE version)
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Object>> handleException(
+    public ResponseEntity<ApiResponse<Object>> handleGenericException(
             Exception ex,
             HttpServletRequest request
     ) {
-        ex.printStackTrace(); // useful for debug
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), request.getRequestURI()));
-    }
+        ex.printStackTrace();
 
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        "Internal server error",
+                        request.getRequestURI()
+                ));
+    }
 }
