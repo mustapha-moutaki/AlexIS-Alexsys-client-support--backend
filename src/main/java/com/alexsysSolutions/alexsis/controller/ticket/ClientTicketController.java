@@ -32,7 +32,6 @@ public class ClientTicketController {
     private final TicketCommandMapper commandMapper;
     private static final Logger logger = LoggerFactory.getLogger(ClientTicketController.class);
     private final CurrentUserProvider currentUser;
-    private String format;
 
     // Create a new ticket as client (limited fields - category, title, description, priority, issue type)
     @Operation(summary = "Create a new ticket as client", description = "Create a support ticket with limited control (no status/assignment)")
@@ -128,7 +127,7 @@ public class ClientTicketController {
             Authentication authentication,
             HttpServletRequest http
     ) {
-        logger.info(format, page, size);
+        logger.info("GET /api/v1/client/tickets/my-tickets/detailed - Fetching client's tickets (detailed) - page: {}, size: {}", page, size);
         try {
             Long clientId = currentUser.getUserId();
             logger.debug("Client ID extracted: {}", clientId);
