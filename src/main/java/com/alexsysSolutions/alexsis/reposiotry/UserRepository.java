@@ -29,4 +29,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("includeDeleted") boolean includeDeleted,
             Pageable pageable
     );
+
+    Optional<User>findByIdAndRole(Long id, UserRole role);
 }
