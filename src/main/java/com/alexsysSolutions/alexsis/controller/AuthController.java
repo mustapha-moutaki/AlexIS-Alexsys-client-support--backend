@@ -22,8 +22,9 @@ public class AuthController {
     private final AuthService authService;
 
 
+    // LOGIN
+
     @PostMapping("/login")
-    @Operation(summary = "User Login")
     public ResponseEntity<AuthDtoResponse> login(
             @RequestBody LoginDtoRequest request,
             HttpServletResponse response
@@ -33,53 +34,66 @@ public class AuthController {
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", authResponse.getRefreshToken())
                 .httpOnly(true)
-                .secure(false)
-                .path("/api/v1/auth/refresh")
-                .maxAge(7 * 24 * 60 * 60) // 7 days
+                .secure(false) // true in production (HTTPS)
+                .path("/api/v1/auth")
+                .maxAge(7 * 24 * 60 * 60)
                 .sameSite("Lax")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
 
-        // to avoid returning refresh token in the body
-        authResponse.setRefreshToken(null);
+        authResponse.setRefreshToken(null); // because we store it in the cookies httpOnly
 
         return ResponseEntity.ok(authResponse);
     }
 
-   // Refresh token endpoint - generate new access token using refresh token
-   @PostMapping("/refresh")
-   @Operation(summary = "Refresh Access Token")
-   public ResponseEntity<AuthDtoResponse> refreshToken(
-           HttpServletRequest request
-   ) {
 
-       String refreshToken = null;
+    // REFRESH TOKEN
 
-       if (request.getCookies() != null) {
-           for (Cookie cookie : request.getCookies()) {
-               if ("refreshToken".equals(cookie.getName())) {
-                   refreshToken = cookie.getValue();
-               }
-           }
-       }
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthDtoResponse> refreshToken(HttpServletRequest request) {
 
-       if (refreshToken == null) {
-           throw new RuntimeException("Refresh token not found");
-       }
+        String refreshToken = extractRefreshToken(request);
 
-       return ResponseEntity.ok(authService.refreshToken(refreshToken));
-   }
+        return ResponseEntity.ok(authService.refreshToken(refreshToken));
+    }
 
+
+    // LOGOUT
 
     @PostMapping("/logout")
-    @Operation(summary = "User Logout", description = "Invalidate refresh token and logout user")
-    public ResponseEntity<Void> logout(
-            @RequestHeader("Authorization") String refreshToken
-    ) {
-        String token = refreshToken.substring(7);
-        authService.logout(token);
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        String refreshToken = extractRefreshToken(request);
+
+        if (refreshToken != null) {
+            authService.logout(refreshToken);
+        }
+
+        // clear cookie
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/api/v1/auth")
+                .maxAge(0)
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.noContent().build();
+    }
+
+
+    // HELPER
+
+    private String extractRefreshToken(HttpServletRequest request) {
+        if (request.getCookies() == null) return null;
+
+        for (Cookie cookie : request.getCookies()) {
+            if ("refreshToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }
