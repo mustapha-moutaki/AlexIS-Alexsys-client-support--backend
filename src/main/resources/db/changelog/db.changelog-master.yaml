@@ -44,3 +44,9 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/changes/025-create-refresh-token-table.yml
+  - include:
+      file: db/changelog/changes/026-rename-expiry-date-column.yml
+  - include:
+      file: db/changelog/changes/027-add-cerated-by-to-comments-table.yml
+  - include:
+      file: db/changelog/changes/028-create-attachments-table.yml
