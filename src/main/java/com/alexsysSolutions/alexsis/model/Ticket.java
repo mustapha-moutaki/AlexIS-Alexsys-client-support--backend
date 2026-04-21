@@ -62,4 +62,5 @@ public class Ticket extends BaseEntity {
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+
 }
