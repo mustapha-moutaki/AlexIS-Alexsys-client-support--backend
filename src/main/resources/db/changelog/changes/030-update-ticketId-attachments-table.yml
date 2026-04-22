@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 030-update-ticketId-attachments-table
+      author: mustapha-moutaki
+      changes:
+        - dropNotNullConstraint:
+            tableName: attachments
+            columnName: ticket_id
+            columnDataType: BIGINT
