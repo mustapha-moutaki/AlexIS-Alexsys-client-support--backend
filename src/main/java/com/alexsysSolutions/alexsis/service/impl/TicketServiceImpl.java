@@ -3,14 +3,17 @@ package com.alexsysSolutions.alexsis.service.impl;
 import com.alexsysSolutions.alexsis.dto.request.ticket.TicketCreateCommand;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketSummaryDtoResponse;
+import com.alexsysSolutions.alexsis.enums.AttachmentStatus;
 import com.alexsysSolutions.alexsis.enums.TicketStatus;
 import com.alexsysSolutions.alexsis.enums.UserRole;
 import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
 import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.mapper.TicketMapper;
+import com.alexsysSolutions.alexsis.model.Attachment;
 import com.alexsysSolutions.alexsis.model.Category;
 import com.alexsysSolutions.alexsis.model.Ticket;
 import com.alexsysSolutions.alexsis.model.User;
+import com.alexsysSolutions.alexsis.reposiotry.AttachmentRepository;
 import com.alexsysSolutions.alexsis.reposiotry.CategoryRepository;
 import com.alexsysSolutions.alexsis.reposiotry.TicketRepository;
 import com.alexsysSolutions.alexsis.reposiotry.UserRepository;
@@ -26,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -39,6 +43,7 @@ public class TicketServiceImpl implements TicketService {
     private final UserRepository userRepository;
     private final CurrentUserProvider currentUser;
     private static final Logger logger = LoggerFactory.getLogger(TicketServiceImpl.class);
+    private final AttachmentRepository attachmentRepository;
 
     @Override
     public TicketDetailDtoResponse create(TicketCreateCommand command) {
@@ -85,6 +90,18 @@ public class TicketServiceImpl implements TicketService {
             ticket.setAssignedAt(LocalDateTime.now());
         }
 
+        // save the ticket
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        // attachments business logic
+        if(command.getAttachmentIds() != null && !command.getAttachmentIds().isEmpty()){
+            List<Attachment>attachments = attachmentRepository.findAllByIdIn(command.getAttachmentIds());
+            for(Attachment attachment : attachments){
+                attachment.setTicket(ticket);
+                attachment.setStatus(AttachmentStatus.LINKED);
+            }
+            attachmentRepository.saveAll(attachments);
+        }
         return ticketMapper.toDtoDetailsResponse(ticketRepository.save(ticket));
     }
 
