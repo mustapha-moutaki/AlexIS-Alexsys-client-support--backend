@@ -3,6 +3,8 @@ package com.alexsysSolutions.alexsis.service;
 import com.alexsysSolutions.alexsis.dto.request.ticket.*;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketSummaryDtoResponse;
+import com.alexsysSolutions.alexsis.enums.Priority;
+import com.alexsysSolutions.alexsis.enums.TicketStatus;
 import org.springframework.data.domain.Page;
 
 public interface TicketService {
@@ -23,4 +25,9 @@ public interface TicketService {
     Page<TicketDetailDtoResponse> getAllDetailsForAdmin(int page, int size);
 
     void delete(Long id);
+
+    // admin change ticket status and agent and priority
+     TicketSummaryDtoResponse updateTicketStatus(Long ticketId, TicketUpdateStatusDtoRequest dto);
+     TicketSummaryDtoResponse reAssignedTicket(Long ticketId, Long agentId);
+     TicketSummaryDtoResponse updateTicketPriority(Long ticketId, Priority priority);
 }
