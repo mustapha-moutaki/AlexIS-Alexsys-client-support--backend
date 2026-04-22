@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 029-add-columns-attachments-table
+      author: mustapha-moutaki
+      changes:
+        - addColumn:
+            tableName: attachments
+            columns:
+              - column:
+                  name: uploaded_by
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: linked_at
+                  type: timestamp
+                  constraints:
+                    nullable: true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
