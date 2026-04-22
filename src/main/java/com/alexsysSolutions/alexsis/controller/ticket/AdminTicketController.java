@@ -4,8 +4,6 @@ import com.alexsysSolutions.alexsis.dto.request.ticket.*;
 import com.alexsysSolutions.alexsis.dto.response.ApiResponse;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketSummaryDtoResponse;
-import com.alexsysSolutions.alexsis.enums.Priority;
-import com.alexsysSolutions.alexsis.enums.TicketStatus;
 import com.alexsysSolutions.alexsis.mapper.TicketCommandMapper;
 import com.alexsysSolutions.alexsis.service.TicketService;
 import io.swagger.v3.oas.annotations.Operation;
