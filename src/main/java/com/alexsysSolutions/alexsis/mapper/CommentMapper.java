@@ -10,7 +10,6 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "spring")
 public interface CommentMapper {
 
-
     @Mapping(source = "author.username", target = "authorName")
     @Mapping(source = "createdAt", target = "createdAt")
     CommentDtoResponse toDto(Comment comment);
