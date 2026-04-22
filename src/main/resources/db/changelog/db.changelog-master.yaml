@@ -50,3 +50,7 @@ databaseChangeLog:
       file: db/changelog/changes/027-add-cerated-by-to-comments-table.yml
   - include:
       file: db/changelog/changes/028-create-attachments-table.yml
+  - include:
+      file: db/changelog/changes/029-add-columns-attachments-table.yml
+  - include:
+      file: db/changelog/changes/030-update-ticketId-attachments-table.yml
