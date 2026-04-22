@@ -1,5 +1,6 @@
 package com.alexsysSolutions.alexsis.model;
 
+import com.alexsysSolutions.alexsis.enums.AttachmentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,13 +31,14 @@ public class Attachment {
     @Column(name = "file_url", nullable = false)
     private String fileUrl;
 
-    @Column(name = "file_name", nullable = true)
+    @Column(name = "file_size", nullable = true)
     private Long fileSize;
 
     private LocalDateTime uploadedAt;
 
+    private AttachmentStatus status;
     @ManyToOne
-    @JoinColumn(name = "ticket_id")
+    @JoinColumn(name = "ticket_id", nullable = true)
     private Ticket ticket;
 
     @PrePersist
