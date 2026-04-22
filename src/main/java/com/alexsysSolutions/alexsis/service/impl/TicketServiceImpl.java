@@ -1,9 +1,12 @@
 package com.alexsysSolutions.alexsis.service.impl;
 
 import com.alexsysSolutions.alexsis.dto.request.ticket.TicketCreateCommand;
+import com.alexsysSolutions.alexsis.dto.request.ticket.TicketUpdatePriorityDtoRequest;
+import com.alexsysSolutions.alexsis.dto.request.ticket.TicketUpdateStatusDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketSummaryDtoResponse;
 import com.alexsysSolutions.alexsis.enums.AttachmentStatus;
+import com.alexsysSolutions.alexsis.enums.Priority;
 import com.alexsysSolutions.alexsis.enums.TicketStatus;
 import com.alexsysSolutions.alexsis.enums.UserRole;
 import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
@@ -280,5 +283,71 @@ public class TicketServiceImpl implements TicketService {
     private Ticket getTicketOrThrow(Long id) {
         return ticketRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+    }
+
+
+    @Override
+    public TicketSummaryDtoResponse updateTicketStatus(Long ticketId, TicketUpdateStatusDtoRequest dto) {
+
+        if (dto.getStatus() == null) {
+            throw new ValidationException("Status must not be null");
+        }
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+
+        TicketStatus newStatus = dto.getStatus();
+
+        ticket.setStatus(newStatus);
+
+        // business logic seconds and almost forgot it
+        if (newStatus == TicketStatus.RESOLVED && ticket.getResolvedAt() == null) {
+            ticket.setResolvedAt(LocalDateTime.now());
+        }
+
+        if (newStatus == TicketStatus.CLOSED && ticket.getClosedAt() == null) {
+            ticket.setClosedAt(LocalDateTime.now());
+        }
+
+        Ticket updatedTicket = ticketRepository.save(ticket);
+
+        return ticketMapper.toDtoSummaryResponse(updatedTicket);
+    }
+
+    @Override
+    public TicketSummaryDtoResponse reAssignedTicket(Long ticketId, Long agentId) {
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+
+        User agent = userRepository.findById(agentId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (agent.getRole() != UserRole.AGENT) {
+            throw new ValidationException("Assigned user must be an agent");
+        }
+
+        ticket.setAssignedTo(agent);
+
+        Ticket updatedTicket = ticketRepository.save(ticket);
+
+        return ticketMapper.toDtoSummaryResponse(updatedTicket);
+    }
+
+    // update the priority of ticket
+    @Override
+    public TicketSummaryDtoResponse updateTicketPriority(Long ticketId, Priority priority ){
+
+       if(priority ==  null){
+           throw new ValidationException("Ticket is not found");
+       }
+        Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(
+                ()-> new ResourceNotFoundException("ticket is not found")
+        );
+
+       ticket.setPriority(priority);
+       Ticket updatedTicketPriority = ticketRepository.save(ticket);
+       return ticketMapper.toDtoSummaryResponse(updatedTicketPriority);
+
     }
 }
