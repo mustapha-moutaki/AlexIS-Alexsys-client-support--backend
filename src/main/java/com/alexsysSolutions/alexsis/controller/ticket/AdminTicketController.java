@@ -1,11 +1,11 @@
 package com.alexsysSolutions.alexsis.controller.ticket;
 
-import com.alexsysSolutions.alexsis.dto.request.ticket.TicketCreateByAdminDto;
-import com.alexsysSolutions.alexsis.dto.request.ticket.TicketCreateCommand;
-import com.alexsysSolutions.alexsis.dto.request.ticket.TicketUpdateByAdminDtoRequest;
+import com.alexsysSolutions.alexsis.dto.request.ticket.*;
 import com.alexsysSolutions.alexsis.dto.response.ApiResponse;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketSummaryDtoResponse;
+import com.alexsysSolutions.alexsis.enums.Priority;
+import com.alexsysSolutions.alexsis.enums.TicketStatus;
 import com.alexsysSolutions.alexsis.mapper.TicketCommandMapper;
 import com.alexsysSolutions.alexsis.service.TicketService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -161,5 +161,69 @@ public class AdminTicketController {
             logger.info("Ticket with ID {} deleted successfully", id);
             return ResponseEntity.ok(response);
 
+    }
+
+
+    // update status of ticket
+    @Operation(summary = "Update ticket status", description = "Change ticket status (OPEN, IN_PROGRESS, RESOLVED, CLOSED)")
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<TicketSummaryDtoResponse>> updateStatus(
+            @Valid
+            @PathVariable Long id,
+            @RequestBody TicketUpdateStatusDtoRequest status,
+            HttpServletRequest http
+    ) {
+
+        logger.info("PATCH /api/v1/admin/tickets/{}/status - Updating status to {}", id, status);
+
+        TicketSummaryDtoResponse updatedTicket = ticketService.updateTicketStatus(id, status);
+
+        ApiResponse<TicketSummaryDtoResponse> response = ApiResponse.success("Ticket status updated successfully", updatedTicket);
+
+        response.setPath(http.getRequestURI());
+        response.setStatus(HttpStatus.OK.value());
+
+        return ResponseEntity.ok(response);
+    }
+
+    // reassign ticket to agent
+    @Operation(summary = "Reassign ticket", description = "Assign ticket to another agent")
+    @PatchMapping("/{id}/assign")
+    public ResponseEntity<ApiResponse<TicketSummaryDtoResponse>> reassignTicket(
+            @PathVariable Long id,
+            @RequestParam Long agentId,
+            HttpServletRequest http
+    ) {
+
+        logger.info("PATCH /api/v1/admin/tickets/{}/assign - Reassigning to agent {}", id, agentId);
+
+        TicketSummaryDtoResponse updatedTicket =
+                ticketService.reAssignedTicket(id, agentId);
+
+        ApiResponse<TicketSummaryDtoResponse> response =
+                ApiResponse.success("Ticket reassigned successfully", updatedTicket);
+
+        response.setPath(http.getRequestURI());
+        response.setStatus(HttpStatus.OK.value());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/priority")
+    public ResponseEntity<ApiResponse<TicketSummaryDtoResponse>>updateTicketPriority(
+            @PathVariable Long id,
+            @RequestBody TicketUpdatePriorityDtoRequest dto,
+            HttpServletRequest http
+    ){
+        logger.info("PATCH /api/v1/admin/tickets/{}/priority - Updating priority to {}", id, dto.getPriority());
+
+        TicketSummaryDtoResponse updatedTicket= ticketService.updateTicketPriority(id, dto.getPriority());
+
+        ApiResponse<TicketSummaryDtoResponse>response = ApiResponse.success("Ticket Priority updated successfully", updatedTicket);
+
+        response.setStatus(HttpStatus.OK.value());
+        response.setPath(http.getRequestURI());
+
+        return ResponseEntity.ok(response);
     }
 }
