@@ -12,3 +12,4 @@ public class TicketUpdatePriorityDtoRequest {
     private Priority priority;
 
 }
+
