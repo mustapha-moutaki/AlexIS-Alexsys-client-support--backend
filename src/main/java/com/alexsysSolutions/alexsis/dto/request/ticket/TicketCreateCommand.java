@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -26,4 +28,5 @@ public class TicketCreateCommand {
     private TicketStatus status;
     private Long clientId;
     private Long assignedToId;
+    List<Long> attachmentIds;
 }

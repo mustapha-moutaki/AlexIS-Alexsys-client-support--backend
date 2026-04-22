@@ -26,5 +26,5 @@ public class TicketCreateByClientDto {
     private IssueType issueType;
     @NotBlank(message = "category is required")
     private Long categoryId;
-    private List<Long> attachmentsIds = new ArrayList<>();
+    private List<Long> attachmentIds = new ArrayList<>();
 }
