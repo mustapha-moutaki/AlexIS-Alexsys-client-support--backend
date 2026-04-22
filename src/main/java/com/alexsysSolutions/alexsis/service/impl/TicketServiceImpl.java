@@ -296,11 +296,18 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
 
+        TicketStatus currentStatus = ticket.getStatus();
         TicketStatus newStatus = dto.getStatus();
+
+        //cannot change a CLOSED ticket
+        if (currentStatus == TicketStatus.CLOSED) {
+            throw new ValidationException("You cannot change the status of a CLOSED ticket");
+        }
+
 
         ticket.setStatus(newStatus);
 
-        // business logic seconds and almost forgot it
+        // business logic (timestamps)
         if (newStatus == TicketStatus.RESOLVED && ticket.getResolvedAt() == null) {
             ticket.setResolvedAt(LocalDateTime.now());
         }
