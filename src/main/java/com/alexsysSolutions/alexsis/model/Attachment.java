@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 
-
 public class Attachment {
 
     @Id
@@ -31,7 +30,7 @@ public class Attachment {
     @Column(name = "file_url", nullable = false)
     private String fileUrl;
 
-    @Column(name = "file_size", nullable = true)
+    @Column(name = "file_name", nullable = true)
     private Long fileSize;
 
     private LocalDateTime uploadedAt;
