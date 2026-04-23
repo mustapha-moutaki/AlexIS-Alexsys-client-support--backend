@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TicketCommandMapper {
 
-    // st: Map admin DTO to create command - admin has full control
+    //  Map admin DTO to create command - admin has full control
     public TicketCreateCommand fromAdminDto(TicketCreateByAdminDto dto) {
         return TicketCreateCommand.builder()
                 .title(dto.getTitle())
@@ -24,7 +24,7 @@ public class TicketCommandMapper {
                 .build();
     }
 
-    // st: Map client DTO to create command - client has limited control
+    //  Map client DTO to create command - client has limited control
     public TicketCreateCommand fromClientDto(TicketCreateByClientDto dto, Long clientId) {
         return TicketCreateCommand.builder()
                 .title(dto.getTitle())
@@ -36,7 +36,7 @@ public class TicketCommandMapper {
                 .build();
     }
 
-    // st: Map admin update DTO to create command for update operation
+    // Map admin update DTO to create command for update operation
     public TicketCreateCommand fromAdminUpdateDto(TicketUpdateByAdminDtoRequest dto, Long ticketId) {
         return TicketCreateCommand.builder()
                 .id(ticketId)
@@ -51,7 +51,7 @@ public class TicketCommandMapper {
                 .build();
     }
 
-    // st: Map client update DTO to create command for update operation - limited fields
+    // Map client update DTO to create command for update operation - limited fields
     public TicketCreateCommand fromClientUpdateDto(TicketUpdateByClientDtoRequest dto, Long ticketId, Long clientId) {
         return TicketCreateCommand.builder()
                 .id(ticketId)
