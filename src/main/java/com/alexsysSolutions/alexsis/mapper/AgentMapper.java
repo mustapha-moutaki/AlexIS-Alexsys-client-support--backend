@@ -10,6 +10,7 @@ import org.mapstruct.*;
 public interface AgentMapper {
     @Mapping(target = "specialization", source = "specialization")
     @Mapping(target = "availabilityStatus", source = "availabilityStatus")
+    @Mapping(target = "level", source = "level")
     AgentDtoResponse toDto(Agent agent);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
