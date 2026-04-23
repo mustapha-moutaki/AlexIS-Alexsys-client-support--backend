@@ -54,3 +54,6 @@ databaseChangeLog:
       file: db/changelog/changes/029-add-columns-attachments-table.yml
   - include:
       file: db/changelog/changes/030-update-ticketId-attachments-table.yml
+# add new fields to the agent table
+  - include:
+      file: db/changelog/changes/031-add-new-fields-agents-table.yml
