@@ -1,5 +1,6 @@
 package com.alexsysSolutions.alexsis.dto.request.agent;
 
+import com.alexsysSolutions.alexsis.enums.AgentLevel;
 import com.alexsysSolutions.alexsis.enums.AvailabilityStatus;
 import com.alexsysSolutions.alexsis.enums.Specialization;
 import lombok.*;
@@ -27,4 +28,5 @@ public class AgentUpdateDtoRequest {
     private String performanceRating;
 
     private AvailabilityStatus availabilityStatus;
+    private AgentLevel level;
 }
