@@ -31,6 +31,6 @@ public class TicketCreateByAdminDto {
     private Long categoryId;
     @NotNull(message = "client is missing")
     private Long clientId;
-    @NotNull(message = "assignTo filed is required")
+
     private Long assignedToId;
 }
