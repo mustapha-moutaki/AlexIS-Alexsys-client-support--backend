@@ -3,6 +3,7 @@ package com.alexsysSolutions.alexsis.service.impl;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.agent.AgentDtoResponse;
+import com.alexsysSolutions.alexsis.enums.AgentLevel;
 import com.alexsysSolutions.alexsis.enums.AvailabilityStatus;
 import com.alexsysSolutions.alexsis.enums.UserRole;
 import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
@@ -56,9 +57,19 @@ public class AgentServiceImpl implements AgentService {
         agent.setPassword(PasswordUtil.hash(dto.getPassword()));
         agent.setRole(UserRole.AGENT);
         agent.setAvailabilityStatus(AvailabilityStatus.NOT_SELECTED);
-        /*
-            createdBy in the security part
-         */
+
+        agent.setActiveTicketsCount(0);
+        agent.setActive(true);
+        agent.setMaxCapacity(5);
+
+        String agentLevel = dto.getLevel().name();
+        if (!agentLevel.trim().isEmpty()){
+            agent.setLevel(dto.getLevel());
+        }else{
+            agent.setLevel(AgentLevel.UNASSIGNED);
+        }
+        agent.setLevel(dto.getLevel());
+
         agent.setCreatedBy(currentUser.getEmail());
 
         Agent savedAgent = agentRepository.save(agent);
