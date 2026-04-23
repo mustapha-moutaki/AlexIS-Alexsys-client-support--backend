@@ -28,4 +28,5 @@ public class AgentDtoResponse {
     private String performanceRating;
 
     private String availabilityStatus;
+    private String level;
 }
