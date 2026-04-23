@@ -1,11 +1,14 @@
 package com.alexsysSolutions.alexsis.model;
 
+import com.alexsysSolutions.alexsis.enums.AgentLevel;
 import com.alexsysSolutions.alexsis.enums.AvailabilityStatus;
 import com.alexsysSolutions.alexsis.enums.Specialization;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "agents")
@@ -32,5 +35,13 @@ public class Agent extends User{
     @Column(name = "availability_status")
     @Enumerated(EnumType.STRING)
     private AvailabilityStatus availabilityStatus;
+
+    // last added fields
+    @Column(name = "active_tickets_count")
+    private Integer activeTicketsCount;
+
+    private Integer maxCapacity;
+    private LocalDateTime lastAssignedAt;
+    private AgentLevel level;
 
 }
