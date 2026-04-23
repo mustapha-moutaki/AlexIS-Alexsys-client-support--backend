@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 031-add-new-fields-agents-table
+      author: mustaphamoutaki
+      changes:
+        - addColumn:
+            tableName: agents
+            columns:
+
+              - column:
+                  name: active_tickets_count
+                  type: INT
+                  defaultValue: 0
+
+              - column:
+                  name: max_capacity
+                  type: INT
+                  defaultValue: 5
+
+              - column:
+                  name: last_assigned_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: level
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
