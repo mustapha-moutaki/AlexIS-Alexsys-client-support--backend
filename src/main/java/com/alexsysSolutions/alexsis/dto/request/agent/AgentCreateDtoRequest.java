@@ -1,5 +1,6 @@
 package com.alexsysSolutions.alexsis.dto.request.agent;
 
+import com.alexsysSolutions.alexsis.enums.AgentLevel;
 import com.alexsysSolutions.alexsis.enums.AvailabilityStatus;
 import com.alexsysSolutions.alexsis.enums.Specialization;
 import jakarta.validation.constraints.Email;
@@ -39,5 +40,6 @@ public class AgentCreateDtoRequest {
 
     private AvailabilityStatus availabilityStatus;// the default is other
 
+    private AgentLevel level;
 
 }
