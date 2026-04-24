@@ -57,3 +57,5 @@ databaseChangeLog:
 # add new fields to the agent table
   - include:
       file: db/changelog/changes/031-add-new-fields-agents-table.yml
+  - include:
+      file: db/changelog/changes/032-add-new-column-clients-table.yml
