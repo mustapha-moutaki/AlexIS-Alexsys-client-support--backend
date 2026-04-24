@@ -15,12 +15,12 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
     Optional<Agent>findByUsername(String username);
 
     @Query("""
-SELECT a FROM Agent a
-WHERE a.active = true
-AND a.availabilityStatus = com.alexsysSolutions.alexsis.enums.AvailabilityStatus.AVAILABLE
-AND a.activeTicketsCount < a.maxCapacity
-ORDER BY a.activeTicketsCount ASC, COALESCE(a.lastAssignedAt, TIMESTAMP, '2000-01-01 00:00:00') ASC
-""")
+    SELECT a FROM Agent a
+    WHERE a.active = true
+    AND a.availabilityStatus = AvailabilityStatus.AVAILABLE
+    AND a.activeTicketsCount < a.maxCapacity
+    ORDER BY a.activeTicketsCount ASC, a.lastAssignedAt ASC
+    """)
     List<Agent> findAvailableAgents();
 
     // This method retrieves all available agents who:
