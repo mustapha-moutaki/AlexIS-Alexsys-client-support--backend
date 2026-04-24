@@ -21,9 +21,9 @@ public class Client extends User {
     @Column(name = "satisfaction_score")
     private Integer satisfactionScore;
 
-    @Column(name = "last_interact_at")
+    @Column(name = "last_interaction_at")
     private LocalDateTime lastInteractAt;
 
     @Column(name = "is_vip")
-    private boolean isVip;
+    private Boolean isVip;
 }
