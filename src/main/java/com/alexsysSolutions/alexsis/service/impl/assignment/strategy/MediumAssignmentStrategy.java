@@ -15,7 +15,7 @@ public class MediumAssignmentStrategy implements AssignmentStrategy {
 
 
     @Override
-    public User assign(List<Agent> agents) {
+    public Agent assign(List<Agent> agents) {
 
         return agents.stream()
                 .sorted(Comparator.comparing(Agent::getActiveTicketsCount))
