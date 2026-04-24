@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 033-update-dataType-isVip-column-clients-table
+      author: mustapha-moutaki
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE clients
+              ALTER COLUMN is_vip TYPE BOOLEAN
+              USING (
+                CASE
+                  WHEN is_vip IN ('true', '1', 't', 'yes') THEN true
+                  ELSE false
+                END
+              );
+      rollback:
+        - sql:
+            sql: |
+              ALTER TABLE clients
+              ALTER COLUMN is_vip TYPE VARCHAR(255)
+              USING (
+                CASE
+                  WHEN is_vip = true THEN 'true'
+                  ELSE 'false'
+                END
+              );
