@@ -24,8 +24,8 @@ public class AgentUpdateDtoRequest {
     private boolean deleted;
 
     private Specialization specialization;
-    private String averageResolutionTime;
-    private String performanceRating;
+    private Integer averageResolutionTime;
+    private Integer performanceRating;
 
     private AvailabilityStatus availabilityStatus;
     private AgentLevel level;
