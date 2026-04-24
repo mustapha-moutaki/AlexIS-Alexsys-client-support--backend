@@ -23,7 +23,7 @@ public class TicketAutoAssignmentScheduler {
 
     @Scheduled(fixedDelay = 60000) // every minute
     public void assignTickets() {
-
+//        log.info("Itellegent Assign Ticket is starting ...)
         List<Ticket> tickets = ticketRepository.findUnassignedTickets();
 
         LocalDateTime now = LocalDateTime.now();
@@ -35,13 +35,14 @@ public class TicketAutoAssignmentScheduler {
             LocalDateTime limit = ticket.getCreatedAt().plusMinutes(delayMinutes);
 
             if (now.isAfter(limit)) {
-
-                User agent = assignmentService.assignAgent(ticket.getPriority());
-
-                ticket.setAssignedTo(agent);
-                ticket.setAssignedAt(now);
-
-                ticketRepository.save(ticket);
+                // I FORGOT TO VERIFY RE-VERIFY TICKET IS STILL UNASSIGNED
+                Ticket refreshed = ticketRepository.findById(ticket.getId()).orElse(null);
+                if (refreshed != null && refreshed.getAssignedTo() == null) {
+                    User agent = assignmentService.assignAgent(ticket.getPriority());
+                    refreshed.setAssignedTo(agent);
+                    refreshed.setAssignedAt(now);
+                    ticketRepository.save(refreshed);
+                }
             }
         }
     }
