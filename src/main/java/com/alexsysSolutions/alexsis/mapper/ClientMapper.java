@@ -5,6 +5,8 @@ import com.alexsysSolutions.alexsis.dto.request.Client.ClientUpdateByAdminDtoReq
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientUpdateProfileDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.client.ClientDtoResponse;
 import com.alexsysSolutions.alexsis.model.Client;
+import lombok.Getter;
+import lombok.Setter;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -12,13 +14,15 @@ public interface ClientMapper {
 
     ClientDtoResponse toDto(Client client);
 
-    Client toEntity(ClientCreateDtoRequest dto);
+//    @Mapping(target = "registrationDate", ignore = true)
+//    @Mapping(target = "satisfactionScore", ignore = true)
+//    @Mapping(target = "lastInteractAt", ignore = true)
+//    @Mapping(target = "isVip", ignore = true)
+//    Client toEntity(ClientCreateDtoRequest dto);
 
-    // update by admin
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateClientByAdmin(ClientUpdateByAdminDtoRequest dto, @MappingTarget Client client);
-
-    // update profile by client
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateClientProfile(ClientUpdateProfileDtoRequest dto, @MappingTarget Client client);
+//    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+//    Client updateClientByAdmin(ClientUpdateByAdminDtoRequest dto, @MappingTarget Client client);
+//
+//    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+//    Client updateClientProfile(ClientUpdateProfileDtoRequest dto, @MappingTarget Client client);
 }
