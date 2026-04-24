@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 032-add-new-column-clients-table
+      author: mustapha-moutaki
+      changes:
+        - addColumn:
+            tableName: clients
+            columns:
+              - column:
+                  name: last_interaction_at
+                  type: timestamp
+
+              - column:
+                  name: is_vip
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
