@@ -1,27 +1,18 @@
 package com.alexsysSolutions.alexsis.service.impl;
 
 import com.alexsysSolutions.alexsis.dto.request.ticket.TicketCreateCommand;
-import com.alexsysSolutions.alexsis.dto.request.ticket.TicketUpdatePriorityDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.ticket.TicketUpdateStatusDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
 import com.alexsysSolutions.alexsis.dto.response.ticket.TicketSummaryDtoResponse;
-import com.alexsysSolutions.alexsis.enums.AttachmentStatus;
-import com.alexsysSolutions.alexsis.enums.Priority;
-import com.alexsysSolutions.alexsis.enums.TicketStatus;
-import com.alexsysSolutions.alexsis.enums.UserRole;
+import com.alexsysSolutions.alexsis.enums.*;
 import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
 import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.mapper.TicketMapper;
-import com.alexsysSolutions.alexsis.model.Attachment;
-import com.alexsysSolutions.alexsis.model.Category;
-import com.alexsysSolutions.alexsis.model.Ticket;
-import com.alexsysSolutions.alexsis.model.User;
-import com.alexsysSolutions.alexsis.reposiotry.AttachmentRepository;
-import com.alexsysSolutions.alexsis.reposiotry.CategoryRepository;
-import com.alexsysSolutions.alexsis.reposiotry.TicketRepository;
-import com.alexsysSolutions.alexsis.reposiotry.UserRepository;
+import com.alexsysSolutions.alexsis.model.*;
+import com.alexsysSolutions.alexsis.reposiotry.*;
 import com.alexsysSolutions.alexsis.security.context.CurrentUserProvider;
 import com.alexsysSolutions.alexsis.service.TicketService;
+import com.alexsysSolutions.alexsis.service.WorkloadService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -47,6 +38,9 @@ public class TicketServiceImpl implements TicketService {
     private final CurrentUserProvider currentUser;
     private static final Logger logger = LoggerFactory.getLogger(TicketServiceImpl.class);
     private final AttachmentRepository attachmentRepository;
+    private final AgentRepository agentRepository;
+    private final WorkloadService workloadService;
+
 
     @Override
     public TicketDetailDtoResponse create(TicketCreateCommand command) {
@@ -76,6 +70,18 @@ public class TicketServiceImpl implements TicketService {
             if (assignedTo.getRole() != UserRole.AGENT) {
                 throw new ValidationException("Assigned user must be agent");
             }
+            // check availability
+            if(assignedTo instanceof Agent agent){
+                if(!agent.isActive()){
+                    throw new ValidationException("Agent is not active");
+                }
+                if(agent.getAvailabilityStatus() != AvailabilityStatus.AVAILABLE){
+                    throw new ValidationException("Agent is not available");
+                }
+                if(agent.getActiveTicketsCount() >= agent.getMaxCapacity()){
+                    throw new ValidationException("Agent is at capacity");
+                }
+            }
         }
 
         Ticket ticket = new Ticket();
@@ -86,14 +92,19 @@ public class TicketServiceImpl implements TicketService {
         ticket.setCategory(category);
         ticket.setClient(client);
         ticket.setAssignedTo(assignedTo);
+
         ticket.setCreatedBy(currentUser.getEmail());
         ticket.setStatus(command.getStatus() != null ? command.getStatus() : TicketStatus.OPEN);
+
+        if (assignedTo instanceof Agent agent) {
+
+            workloadService.incrementTicketsActiveCount(agent);
+        }
 
         if (assignedTo != null) {
             ticket.setAssignedAt(LocalDateTime.now());
         }
 
-        // save the ticket
         Ticket savedTicket = ticketRepository.save(ticket);
 
         // attachments business logic
@@ -105,7 +116,8 @@ public class TicketServiceImpl implements TicketService {
             }
             attachmentRepository.saveAll(attachments);
         }
-        return ticketMapper.toDtoDetailsResponse(ticketRepository.save(ticket));
+//        Ticket createdTicket = ticketRepository.save(ticket)/
+        return ticketMapper.toDtoDetailsResponse(savedTicket);
     }
 
 
@@ -167,6 +179,25 @@ public class TicketServiceImpl implements TicketService {
             if (agent.getRole() != UserRole.AGENT) {
                 throw new ValidationException("Assigned user must be agent");
             }
+
+            Agent oldAgent = (Agent) ticket.getAssignedTo();
+            if(oldAgent != null){
+                workloadService.decrementTicketsActiveCount(oldAgent);
+                agentRepository.save(oldAgent);
+            }
+
+            Agent newAgent = (Agent) agent;
+            if(!newAgent.isActive()){
+                throw new ValidationException("Agent is not active");
+            }
+            if(newAgent.getAvailabilityStatus() != AvailabilityStatus.AVAILABLE){
+                throw new ValidationException("Agent is not available");
+            }
+            if(newAgent.getActiveTicketsCount() >= newAgent.getMaxCapacity()){
+                throw new ValidationException("Agent is at capacity");
+            }
+            workloadService.incrementTicketsActiveCount(newAgent);
+            agentRepository.save(newAgent);
             ticket.setAssignedTo(agent);
             if (ticket.getAssignedAt() == null) {
                 ticket.setAssignedAt(LocalDateTime.now());
@@ -276,8 +307,13 @@ public class TicketServiceImpl implements TicketService {
                 !ticket.getClient().getId().equals(currentUser.getUserId())) {
             throw new ValidationException("Not allowed");
         }
-
+        // if the ticket deleted then the agent gonna be busy his entire life
+        if(ticket.getAssignedTo() != null && ticket.getAssignedTo() instanceof Agent agent) {
+            workloadService.decrementTicketsActiveCount(agent);
+            agentRepository.save(agent);
+        }
         ticketRepository.delete(ticket);
+
     }
 
     private Ticket getTicketOrThrow(Long id) {
@@ -310,10 +346,23 @@ public class TicketServiceImpl implements TicketService {
         // business logic (timestamps)
         if (newStatus == TicketStatus.RESOLVED && ticket.getResolvedAt() == null) {
             ticket.setResolvedAt(LocalDateTime.now());
+
+            if (ticket.getAssignedTo() != null && ticket.getAssignedTo() instanceof Agent agent) {
+                workloadService.decrementTicketsActiveCount(agent);
+                agentRepository.save(agent);
+            }
         }
 
-        if (newStatus == TicketStatus.CLOSED && ticket.getClosedAt() == null) {
+        if (newStatus == TicketStatus.CLOSED && ticket.getClosedAt() == null && ticket.getResolvedAt() == null) {
+
             ticket.setClosedAt(LocalDateTime.now());
+
+            if (ticket.getAssignedTo() != null) {
+
+                Agent agentAssigned = (Agent) ticket.getAssignedTo();
+                workloadService.decrementTicketsActiveCount(agentAssigned);
+                agentRepository.save(agentAssigned);
+            }
         }
 
         Ticket updatedTicket = ticketRepository.save(ticket);
@@ -334,7 +383,15 @@ public class TicketServiceImpl implements TicketService {
             throw new ValidationException("Assigned user must be an agent");
         }
 
+        // remove activeTicketCount from the old agent
+        if(ticket.getAssignedTo() != null && ticket.getAssignedTo() instanceof Agent oldAgent){
+            workloadService.decrementTicketsActiveCount(oldAgent);
+            agentRepository.save(oldAgent);
+        }
+        // reAssigned it to new agent
+        workloadService.incrementTicketsActiveCount((Agent) agent);
         ticket.setAssignedTo(agent);
+        ticket.setAssignedAt(LocalDateTime.now());
 
         Ticket updatedTicket = ticketRepository.save(ticket);
 
