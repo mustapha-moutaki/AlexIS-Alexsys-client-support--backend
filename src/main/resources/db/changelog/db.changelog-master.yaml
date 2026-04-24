@@ -59,3 +59,7 @@ databaseChangeLog:
       file: db/changelog/changes/031-add-new-fields-agents-table.yml
   - include:
       file: db/changelog/changes/032-add-new-column-clients-table.yml
+  - include:
+        file: db/changelog/changes/033-update-dataType-isVip-column-clients-table.yml
+  - include:
+      file: db/changelog/changes/034-alter-isVip-to-boolean.yml
