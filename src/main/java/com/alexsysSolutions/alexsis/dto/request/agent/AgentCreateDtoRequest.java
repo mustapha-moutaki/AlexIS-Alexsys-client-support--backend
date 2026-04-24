@@ -35,8 +35,8 @@ public class AgentCreateDtoRequest {
     // agent info
     @NotNull
     private Specialization specialization;
-    private String averageResolutionTime;
-    private String performanceRating;
+    private Integer averageResolutionTime;
+    private Integer performanceRating;
 
     private AvailabilityStatus availabilityStatus;// the default is other
 
