@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: alter-isVip-column-type
+      author: mustapha-moutaki
+      changes:
+        - modifyDataType:
+            tableName: clients
+            columnName: is_vip
+            newDataType: BOOLEAN
