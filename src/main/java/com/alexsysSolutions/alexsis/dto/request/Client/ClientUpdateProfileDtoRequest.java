@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+
 public class ClientUpdateProfileDtoRequest {
     private String firstName;
     private String lastName;
