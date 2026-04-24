@@ -24,8 +24,8 @@ public class AgentDtoResponse {
     private boolean deleted;
 
     private String specialization;
-    private String averageResolutionTime;
-    private String performanceRating;
+    private Integer averageResolutionTime;
+    private Integer performanceRating;
 
     private String availabilityStatus;
     private String level;
