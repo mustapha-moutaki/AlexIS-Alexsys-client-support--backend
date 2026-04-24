@@ -6,5 +6,5 @@ import com.alexsysSolutions.alexsis.model.User;
 import java.util.List;
 
 public interface AssignmentStrategy {
-        User assign(List<Agent> agents);
+        Agent assign(List<Agent> agents);
     }
