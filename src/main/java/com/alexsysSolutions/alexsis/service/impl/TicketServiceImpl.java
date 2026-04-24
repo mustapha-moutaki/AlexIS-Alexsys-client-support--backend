@@ -174,37 +174,43 @@ public class TicketServiceImpl implements TicketService {
 
         // Update assigned agent if provided
         if (command.getAssignedToId() != null) {
+
             User agent = userRepository.findById(command.getAssignedToId())
                     .orElseThrow(() -> new ResourceNotFoundException("Assigned user not found"));
+
             if (agent.getRole() != UserRole.AGENT) {
                 throw new ValidationException("Assigned user must be agent");
             }
 
-            Agent oldAgent = (Agent) ticket.getAssignedTo();
-            if(oldAgent != null){
-                workloadService.decrementTicketsActiveCount(oldAgent);
-                agentRepository.save(oldAgent);
-            }
+            // check if the assignment is changing
+            if (ticket.getAssignedTo() == null || !ticket.getAssignedTo().getId().equals(agent.getId())) {
 
-            Agent newAgent = (Agent) agent;
-            if(!newAgent.isActive()){
-                throw new ValidationException("Agent is not active");
-            }
-            if(newAgent.getAvailabilityStatus() != AvailabilityStatus.AVAILABLE){
-                throw new ValidationException("Agent is not available");
-            }
-            if(newAgent.getActiveTicketsCount() >= newAgent.getMaxCapacity()){
-                throw new ValidationException("Agent is at capacity");
-            }
-            workloadService.incrementTicketsActiveCount(newAgent);
-            agentRepository.save(newAgent);
-            ticket.setAssignedTo(agent);
-            if (ticket.getAssignedAt() == null) {
+                // old agent
+                if (ticket.getAssignedTo() instanceof Agent oldAgent) {
+                    workloadService.decrementTicketsActiveCount(oldAgent);
+                    agentRepository.save(oldAgent);
+                }
+
+                Agent newAgent = (Agent) agent;
+
+                // validation
+                if (!newAgent.isActive()) {
+                    throw new ValidationException("Agent is not active");
+                }
+                if (newAgent.getAvailabilityStatus() != AvailabilityStatus.AVAILABLE) {
+                    throw new ValidationException("Agent is not available");
+                }
+                if (newAgent.getActiveTicketsCount() >= newAgent.getMaxCapacity()) {
+                    throw new ValidationException("Agent is at capacity");
+                }
+
+                workloadService.incrementTicketsActiveCount(newAgent);
+                agentRepository.save(newAgent);
+
+                ticket.setAssignedTo(newAgent);
                 ticket.setAssignedAt(LocalDateTime.now());
             }
-            logger.debug("Ticket assigned to agent with ID: {}", command.getAssignedToId());
         }
-
         // Update status if provided (admin only)
         if (command.getStatus() != null) {
             TicketStatus oldStatus = ticket.getStatus();
@@ -376,21 +382,30 @@ public class TicketServiceImpl implements TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
 
-        User agent = userRepository.findById(agentId)
+        User user = userRepository.findById(agentId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (agent.getRole() != UserRole.AGENT) {
+        if (!(user instanceof Agent newAgent)) {
             throw new ValidationException("Assigned user must be an agent");
         }
 
-        // remove activeTicketCount from the old agent
-        if(ticket.getAssignedTo() != null && ticket.getAssignedTo() instanceof Agent oldAgent){
+        // same agent
+        if (ticket.getAssignedTo() != null && ticket.getAssignedTo().getId().equals(newAgent.getId())) {
+
+            return ticketMapper.toDtoSummaryResponse(ticket);
+        }
+
+        // old agent
+        if (ticket.getAssignedTo() instanceof Agent oldAgent) {
             workloadService.decrementTicketsActiveCount(oldAgent);
             agentRepository.save(oldAgent);
         }
-        // reAssigned it to new agent
-        workloadService.incrementTicketsActiveCount((Agent) agent);
-        ticket.setAssignedTo(agent);
+
+        // new agent
+        workloadService.incrementTicketsActiveCount(newAgent);
+        agentRepository.save(newAgent);
+
+        ticket.setAssignedTo(newAgent);
         ticket.setAssignedAt(LocalDateTime.now());
 
         Ticket updatedTicket = ticketRepository.save(ticket);
