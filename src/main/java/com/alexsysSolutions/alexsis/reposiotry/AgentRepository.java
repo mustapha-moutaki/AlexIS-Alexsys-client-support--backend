@@ -15,13 +15,12 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
     Optional<Agent>findByUsername(String username);
 
     @Query("""
-    SELECT a FROM Agent a
-    WHERE a.active = true
-    AND a.availabilityStatus = com.alexsysSolutions.alexsis.enums.AvailabilityStatus.AVAILABLE
-    AND a.activeTicketsCount < a.maxCapacity
-    AND a.lastAssignedAt IS NOT NULL
-    ORDER BY a.activeTicketsCount ASC, a.lastAssignedAt ASC
-    """)
+SELECT a FROM Agent a
+WHERE a.active = true
+AND a.availabilityStatus = com.alexsysSolutions.alexsis.enums.AvailabilityStatus.AVAILABLE
+AND a.activeTicketsCount < a.maxCapacity
+ORDER BY a.activeTicketsCount ASC, COALESCE(a.lastAssignedAt, TIMESTAMP, '2000-01-01 00:00:00') ASC
+""")
     List<Agent> findAvailableAgents();
 
     // This method retrieves all available agents who:
@@ -32,5 +31,19 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
     // Then it sorts them by:
     // - lowest workload first (activeTicketsCount)
     // - and oldest assignment time first (fair distribution)
+
+
+
+    // ==== Queries for stats =====
+    @Query("SELECT count (*) FROM Agent a WHERE a.availabilityStatus = 'AVAILABLE' ")
+    int countAvailableAgents();
+
+    @Query("SELECT count (*) FROM Agent a where a.availabilityStatus = 'BUSY' ")
+    int countBusyAgent();
+
+    @Query("SELECT count(*) FROM Agent a WHERE a.activeTicketsCount > a.maxCapacity")
+    int overloadAgents();
+
+
 
 }
