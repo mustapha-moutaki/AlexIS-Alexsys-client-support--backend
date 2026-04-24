@@ -68,7 +68,6 @@ public class AgentServiceImpl implements AgentService {
         }else{
             agent.setLevel(AgentLevel.UNASSIGNED);
         }
-        agent.setLevel(dto.getLevel());
 
         agent.setCreatedBy(currentUser.getEmail());
 
@@ -143,6 +142,12 @@ public class AgentServiceImpl implements AgentService {
                     return new ResourceNotFoundException("agent not found ");
                 }
         );
+        if(agent.getActiveTicketsCount() != null && agent.getActiveTicketsCount() > 0){
+            logger.warn("Cannot delete agent with active tickets - id: {}", id);
+            throw new ValidationException(
+                    String.format("Cannot delete agent with id: %d because they have active tickets", id)
+            );
+        }
         agentRepository.delete(agent);
         logger.info("Agent deleted successfully with id: {}", id);
     }
