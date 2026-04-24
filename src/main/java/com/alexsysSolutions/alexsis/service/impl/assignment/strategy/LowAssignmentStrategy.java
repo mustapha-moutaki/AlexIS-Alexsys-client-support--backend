@@ -14,7 +14,7 @@ import java.util.List;
 public class LowAssignmentStrategy implements AssignmentStrategy {
 
         @Override
-        public User assign(List<Agent> agents) {
+        public Agent assign(List<Agent> agents) {
             return agents.stream()
                     .findFirst()
                     .orElseThrow(() -> new ResourceNotFoundException("No available agent for LOW priority"));
