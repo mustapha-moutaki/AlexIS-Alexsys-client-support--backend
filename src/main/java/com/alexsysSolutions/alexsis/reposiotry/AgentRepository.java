@@ -35,15 +35,30 @@ ORDER BY a.activeTicketsCount ASC, COALESCE(a.lastAssignedAt, TIMESTAMP, '2000-0
 
 
     // ==== Queries for stats =====
-    @Query("SELECT count (*) FROM Agent a WHERE a.availabilityStatus = 'AVAILABLE' ")
-    int countAvailableAgents();
+    @Query("SELECT count(*) FROM Agent a")
+    int countTotalAgents();
 
     @Query("SELECT count (*) FROM Agent a where a.availabilityStatus = 'BUSY' ")
     int countBusyAgent();
 
+    @Query("SELECT count (*) FROM Agent a WHERE a.availabilityStatus = 'AVAILABLE' ")
+    int countAvailableAgents();
+
     @Query("SELECT count(*) FROM Agent a WHERE a.activeTicketsCount > a.maxCapacity")
     int overloadAgents();
 
+    @Query("SELECT avg (a.averageResolutionTime) FROM Agent a")
+    Double averageResolutionTime();
 
+    @Query("SELECT avg(a.performanceRating) FROM Agent a")
+    Double averagePerformanceRating();
 
+    @Query("SELECT a.firstName, a.lastName FROM Agent a" +
+            " WHERE a.performanceRating = (SELECT max(performanceRating) FROM Agent) ")
+    String findBestAgent();
+
+    @Query("SELECT avg(a.activeTicketsCount) FROM Agent a")
+    double avgLoadPerAgent();
+
+    // riskDetected need to cal so in the service
 }
