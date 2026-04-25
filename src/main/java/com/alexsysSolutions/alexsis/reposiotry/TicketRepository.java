@@ -37,4 +37,36 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     AND t.createdAt IS NOT NULL
     """)
     List<Ticket> findUnassignedTickets();
+
+
+    // for stats
+    @Query("SELECT count (t) FROM Ticket t")
+    int totalTickets();
+
+    @Query("SELECT count(t) FROM Ticket t WHERE t.status = 'OPEN' OR t.status = 'IN_PROGRESS' OR t.status = 'REOPENED'")
+    int totalActiveTickets();
+
+    @Query("SELECT count(t) FROM Ticket t WHERE t.status='RESOLVED' ")
+    int totalResolvedTickets();
+
+    @Query("SELECT count(t) FROM Ticket t WHERE t.status='CLOSED' ")
+    int totalClosedTickets();
+
+    /*
+    native query=true: the query is not jpQL it's Sql
+    unit : hour
+     */
+    @Query(value = """
+    SELECT AVG(EXTRACT(EPOCH FROM (t.resolved_at - t.created_at)) / 3600) 
+    FROM tickets t
+    WHERE t.status = 'RESOLVED' AND t.assigned_agent_id IS NOT NULL
+    """, nativeQuery = true)
+    Double avgResolutionTime();
+
+    @Query("SELECT count(t) FROM Ticket t WHERE t.priority = 'HIGH' ")
+    int highPriorityTickets();
+
+    @Query("SELECT count(t) FROM Ticket t WHERE FUNCTION('DATE', t.createdAt) = CURRENT_DATE")
+    int totalTicketsToday();
+
 }
