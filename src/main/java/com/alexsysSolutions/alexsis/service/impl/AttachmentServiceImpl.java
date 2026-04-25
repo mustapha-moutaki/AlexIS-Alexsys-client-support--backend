@@ -2,6 +2,7 @@ package com.alexsysSolutions.alexsis.service.impl;
 
 import com.alexsysSolutions.alexsis.dto.request.attachment.AttachmentCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.attachment.AttachmentDtoResponse;
+import com.alexsysSolutions.alexsis.dto.response.dashboard.DashboardOverViewDto;
 import com.alexsysSolutions.alexsis.enums.AttachmentStatus;
 import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
 import com.alexsysSolutions.alexsis.exception.ValidationException;
@@ -9,7 +10,11 @@ import com.alexsysSolutions.alexsis.mapper.AttachmentMapper;
 import com.alexsysSolutions.alexsis.model.Attachment;
 import com.alexsysSolutions.alexsis.reposiotry.AttachmentRepository;
 import com.alexsysSolutions.alexsis.service.AttachmentService;
+import com.alexsysSolutions.alexsis.service.DashboardService;
 import com.alexsysSolutions.alexsis.service.FileStorageService;
+import com.alexsysSolutions.alexsis.service.impl.dashboardServices.AgentStatsService;
+import com.alexsysSolutions.alexsis.service.impl.dashboardServices.ClientStatsService;
+import com.alexsysSolutions.alexsis.service.impl.dashboardServices.TicketStatsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -108,6 +113,8 @@ public class AttachmentServiceImpl implements AttachmentService {
             attachmentRepository.delete(att);
         }
     }
+
+
 }
 
 
