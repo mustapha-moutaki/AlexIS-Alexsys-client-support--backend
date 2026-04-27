@@ -36,6 +36,7 @@ public class Attachment {
 
     private LocalDateTime uploadedAt;
 
+    @Enumerated(EnumType.STRING)
     private AttachmentStatus status;
     @ManyToOne
     @JoinColumn(name = "ticket_id", nullable = true)
