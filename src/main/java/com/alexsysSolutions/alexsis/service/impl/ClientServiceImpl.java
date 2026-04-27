@@ -17,12 +17,14 @@ import com.alexsysSolutions.alexsis.util.PasswordUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,7 +39,7 @@ public class ClientServiceImpl implements ClientService {
     private final ClientMapper clientMapper;
     private final CurrentUserProvider currentUser;
     private static final Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
-
+    private final PasswordEncoder passwordEncoder;
     @Override
     public ClientDtoResponse create(ClientCreateDtoRequest dto) {
         logger.info("Creating new client with email: {}", dto.getEmail());
@@ -127,7 +129,6 @@ public class ClientServiceImpl implements ClientService {
         if (dto.getLastName() != null) client.setLastName(dto.getLastName());
         if (dto.getPhoneNumber() != null) client.setPhoneNumber(dto.getPhoneNumber());
         if (dto.getProfilePicture() != null) client.setProfilePicture(dto.getProfilePicture());
-        if(dto.getPassword() != null) client.setPassword(PasswordUtil.hash(dto.getPassword()));
         Client savedClient = clientRepository.save(client);
 
         // Return only the updated profile fields
@@ -197,5 +198,30 @@ public class ClientServiceImpl implements ClientService {
 
         clientRepository.delete(client);
         logger.info("Client deleted successfully with ID: {}", clientId);
+    }
+
+    @Override
+    public void changePassword(Long id, String currentPassword, String newPassword) {
+
+        logger.info("Changing password for client ID: {}", id);
+
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found with ID: " + id));
+
+
+        if (!passwordEncoder.matches(currentPassword, client.getPassword())) {
+            logger.warn("Invalid current password for client ID: {}", id);
+            throw new ValidationException("Current password is incorrect");
+        }
+
+        if (passwordEncoder.matches(newPassword, client.getPassword())) {
+            throw new ValidationException("New password must be different from current password");
+        }
+
+        client.setPassword(passwordEncoder.encode(newPassword));
+
+        clientRepository.save(client);
+
+        logger.info("Password changed successfully for client ID: {}", id);
     }
 }
