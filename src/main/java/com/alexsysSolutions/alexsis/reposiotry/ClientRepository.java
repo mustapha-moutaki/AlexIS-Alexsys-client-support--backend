@@ -95,5 +95,7 @@ WHERE (:isVip IS NULL OR c.isVip = :isVip)
    \s""")
     ClientPriorityProjection getMyPriorityStats(Long clientId);
 
+    @Query("SELECT c.registrationDate FROM Client c WHERE c.id = :clientId")
+    LocalDateTime findRegistrationDateById(Long clientId);
 
 }
