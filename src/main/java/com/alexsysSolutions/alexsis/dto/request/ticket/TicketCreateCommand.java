@@ -3,15 +3,15 @@ package com.alexsysSolutions.alexsis.dto.request.ticket;
 import com.alexsysSolutions.alexsis.enums.IssueType;
 import com.alexsysSolutions.alexsis.enums.Priority;
 import com.alexsysSolutions.alexsis.enums.TicketStatus;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TicketCreateCommand {
 
     private Long id;
