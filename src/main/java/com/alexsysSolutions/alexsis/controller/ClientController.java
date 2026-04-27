@@ -2,10 +2,12 @@ package com.alexsysSolutions.alexsis.controller;
 
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientUpdateByAdminDtoRequest;
+import com.alexsysSolutions.alexsis.dto.request.Client.ClientUpdatePasswordDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientUpdateProfileDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.ApiResponse;
 import com.alexsysSolutions.alexsis.dto.response.client.ClientDtoResponse;
 import com.alexsysSolutions.alexsis.dto.response.client.ClientUpdateProfileDtoResponse;
+import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.security.context.CurrentUserProvider;
 import com.alexsysSolutions.alexsis.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -140,6 +142,42 @@ public class ClientController {
         response.setPath(http.getRequestURI());
         response.setStatus(HttpStatus.OK.value());
         logger.info("Profile updated successfully for client {}", clientId);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @PostMapping("/change-password")
+    @PreAuthorize("hasRole('CLIENT')")  // Allow clients to change their own password
+    @Operation(summary = "Update client password", description = "Allow clients to update their own password")
+
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @Valid @RequestBody ClientUpdatePasswordDtoRequest dto,
+            HttpServletRequest http
+    ) {
+
+        Long userId = currentUser.getUserId();
+
+        //  validate passwords match
+        if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+            throw new ValidationException("Passwords do not match");
+        }
+
+        //  call service
+        clientService.changePassword(
+                userId,
+                dto.getCurrentPassword(),
+                dto.getNewPassword()
+        );
+
+        //  response
+        ApiResponse<Void> response =
+                ApiResponse.success("Password changed successfully", null);
+
+        response.setPath(http.getRequestURI());
+        response.setStatus(HttpStatus.OK.value());
+
+        logger.info("Password changed successfully for client {}", userId);
+
         return ResponseEntity.ok(response);
     }
 }
