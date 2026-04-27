@@ -13,4 +13,5 @@ public class ClientUpdateProfileDtoRequest {
     private String lastName;
     private String phoneNumber;
     private String profilePicture;
+    private String password;
 }
