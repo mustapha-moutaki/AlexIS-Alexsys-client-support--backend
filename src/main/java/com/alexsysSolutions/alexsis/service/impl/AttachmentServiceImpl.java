@@ -10,11 +10,8 @@ import com.alexsysSolutions.alexsis.mapper.AttachmentMapper;
 import com.alexsysSolutions.alexsis.model.Attachment;
 import com.alexsysSolutions.alexsis.reposiotry.AttachmentRepository;
 import com.alexsysSolutions.alexsis.service.AttachmentService;
-import com.alexsysSolutions.alexsis.service.DashboardService;
 import com.alexsysSolutions.alexsis.service.FileStorageService;
-import com.alexsysSolutions.alexsis.service.impl.dashboardServices.AgentStatsService;
-import com.alexsysSolutions.alexsis.service.impl.dashboardServices.ClientStatsService;
-import com.alexsysSolutions.alexsis.service.impl.dashboardServices.TicketStatsService;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
