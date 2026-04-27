@@ -23,7 +23,7 @@ public class TicketAutoAssignmentScheduler {
 
     @Scheduled(fixedDelay = 60000) // every minute
     public void assignTickets() {
-//        log.info("Itellegent Assign Ticket is starting ...)
+        log.info("Intelligent Assign Ticket is starting ...");
         List<Ticket> tickets = ticketRepository.findUnassignedTickets();
 
         LocalDateTime now = LocalDateTime.now();
