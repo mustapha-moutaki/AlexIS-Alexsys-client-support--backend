@@ -7,7 +7,6 @@ import com.alexsysSolutions.alexsis.dto.response.client.ClientDtoResponse;
 import com.alexsysSolutions.alexsis.dto.response.client.ClientUpdateProfileDtoResponse;
 import org.springframework.data.domain.Page;
 
-import java.time.LocalDateTime;
 
 public interface ClientService {
     ClientDtoResponse create(ClientCreateDtoRequest dto);
@@ -23,4 +22,6 @@ public interface ClientService {
             String sortDirection);
 
     void delete(Long clientId);
+
+    void changePassword(Long id, String currentPassword, String newPassword);
 }
