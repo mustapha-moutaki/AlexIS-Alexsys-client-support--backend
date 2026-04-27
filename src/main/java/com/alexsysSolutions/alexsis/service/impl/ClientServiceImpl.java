@@ -127,7 +127,7 @@ public class ClientServiceImpl implements ClientService {
         if (dto.getLastName() != null) client.setLastName(dto.getLastName());
         if (dto.getPhoneNumber() != null) client.setPhoneNumber(dto.getPhoneNumber());
         if (dto.getProfilePicture() != null) client.setProfilePicture(dto.getProfilePicture());
-
+        if(dto.getPassword() != null) client.setPassword(PasswordUtil.hash(dto.getPassword()));
         Client savedClient = clientRepository.save(client);
 
         // Return only the updated profile fields
