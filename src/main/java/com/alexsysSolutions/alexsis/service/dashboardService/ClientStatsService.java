@@ -6,4 +6,5 @@ public interface ClientStatsService {
      int totalClientsToday(); // clients registered today
      Double avgSatisfactionScore(); // average satisfaction score across clients
      int lowSatisfactionClients();
+
 }
