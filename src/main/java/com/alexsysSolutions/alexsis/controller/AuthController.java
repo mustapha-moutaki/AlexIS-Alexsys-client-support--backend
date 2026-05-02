@@ -35,7 +35,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", authResponse.getRefreshToken())
                 .httpOnly(true)
                 .secure(false) // true in production (HTTPS)
-                .path("/api/v1/auth")
+                .path("/")
                 .maxAge(7 * 24 * 60 * 60)
                 .sameSite("Lax")
                 .build();
@@ -47,18 +47,22 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
-
-    // REFRESH TOKEN
+    // refresh token
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthDtoResponse> refreshToken(HttpServletRequest request) {
 
         String refreshToken = extractRefreshToken(request);
 
-        return ResponseEntity.ok(authService.refreshToken(refreshToken));
+        AuthDtoResponse response = authService.refreshToken(refreshToken);
+
+        // FIX: handle invalid refresh cleanly
+        if (response == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        return ResponseEntity.ok(response);
     }
-
-
     // LOGOUT
 
     @PostMapping("/logout")
@@ -74,7 +78,7 @@ public class AuthController {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(false)
-                .path("/api/v1/auth")
+                .path("/")
                 .maxAge(0)
                 .build();
 
