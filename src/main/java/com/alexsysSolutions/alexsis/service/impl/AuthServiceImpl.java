@@ -53,38 +53,45 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    @Override
-    public AuthDtoResponse refreshToken(String refreshToken) {
+@Override
+public AuthDtoResponse refreshToken(String refreshToken) {
 
-        RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
+    System.out.println("Refresh token received: " + refreshToken);
 
-        if (storedToken.isRevoked()) {
-            throw new RuntimeException("Refresh token revoked");
-        }
+    RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
+            .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
 
-        if (storedToken.getExpiryDate().isBefore(java.time.LocalDateTime.now())) {
-            throw new RuntimeException("Refresh token expired");
-        }
+    System.out.println("Stored token found");
+    System.out.println("Revoked: " + storedToken.isRevoked());
+    System.out.println("Expires at: " + storedToken.getExpiryDate());
 
-        User user = userRepository.findByEmail(storedToken.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // revoke old token
-        storedToken.setRevoked(true);
-        refreshTokenRepository.save(storedToken);
-
-        // generate new access + refresh
-        String newAccessToken = jwtService.generateToken(new CustomUserDetails(user));
-        RefreshToken newRefreshToken = createRefreshToken(user);
-
-        return AuthDtoResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken.getToken())
-                .user(userMapper.toDto(user))
-                .build();
+    if (storedToken.isRevoked()) {
+        System.out.println("Refresh token rejected: revoked");
+        return null;
     }
 
+    if (storedToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+        System.out.println("Refresh token rejected: expired");
+        return null;
+    }
+
+    User user = userRepository.findByEmail(storedToken.getEmail())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    storedToken.setRevoked(true);
+    refreshTokenRepository.save(storedToken);
+
+    String newAccessToken = jwtService.generateToken(new CustomUserDetails(user));
+    RefreshToken newRefreshToken = createRefreshToken(user);
+
+    System.out.println("New refresh token created: " + newRefreshToken.getToken());
+
+    return AuthDtoResponse.builder()
+            .accessToken(newAccessToken)
+            .refreshToken(newRefreshToken.getToken())
+            .user(userMapper.toDto(user))
+            .build();
+}
     @Override
     public void logout(String refreshToken) {
 
