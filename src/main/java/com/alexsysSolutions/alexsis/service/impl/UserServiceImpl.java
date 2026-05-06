@@ -27,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 
@@ -39,6 +40,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserMapper userMapper;
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final CurrentUserProvider currentUser;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public UserDtoResponse create(UserCreateDtoRequest dto) {
@@ -75,6 +77,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         // Mapping and Saving
         User user = userMapper.toEntity(dto);
 
+        // handle profile image - store image in the cloudinary
+        String imageUrl = null;
+        if(dto.getProfilePicture() != null && !dto.getProfilePicture().isEmpty()){
+            logger.info("Uploading image to Cloudinary...");
+            try{
+                imageUrl = cloudinaryService.upload(dto.getProfilePicture());
+                logger.info("...............................");
+                logger.info("IMAGE UPLOADED SUCCESSFULLY");
+            }catch (IOException e){
+                logger.info("...............................");
+                logger.info("FAILED TO UPLOAD ");
+                throw new RuntimeException("Failed to upload profile picture", e);
+            }
+        }
+        user.setProfilePicture(imageUrl);
+
         // Hash password
         user.setPassword(PasswordUtil.hash(dto.getPassword()));
 
@@ -83,6 +101,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setCreatedBy(currentUser.getEmail());
 
         User savedUser = userRepository.save(user);
+
         logger.info(" User created successfully with id: {}", savedUser.getId());
         return userMapper.toDto(savedUser);
     }
