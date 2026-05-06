@@ -34,7 +34,7 @@ public class AgentServiceImpl implements AgentService {
     private final UserMapper userMapper;
     private static final Logger logger = LoggerFactory.getLogger(AgentServiceImpl.class);
     private final CurrentUserProvider currentUser;
-
+    private final CloudinaryService cloudinaryService;
     @Override
     public AgentDtoResponse create(AgentCreateDtoRequest dto) {
         logger.info(" Creating new agent with email: {}", dto.getEmail());
@@ -70,7 +70,17 @@ public class AgentServiceImpl implements AgentService {
         }
 
         agent.setCreatedBy(currentUser.getEmail());
-
+        if(dto.getProfilePicture() != null && !dto.getProfilePicture().isEmpty()){
+            logger.info("Uploading profile picture for agent ...");
+            try {
+                String imageUrl = cloudinaryService.upload(dto.getProfilePicture());
+                agent.setProfilePicture(imageUrl);
+                logger.info("Agent profile picture uploaded successfully");
+            } catch (Exception e) {
+                logger.error("Failed to upload agent profile picture", e);
+                throw new RuntimeException("Failed to upload profile picture", e);
+            }
+        }
         Agent savedAgent = agentRepository.save(agent);
         logger.info("Agent created successfully with id: {}", savedAgent.getId());
         return agentMapper.toDto(savedAgent);
