@@ -30,7 +30,7 @@ public class AgentController {
     @PostMapping
     public ResponseEntity<ApiResponse<AgentDtoResponse>> create(
             @Valid
-            @RequestBody AgentCreateDtoRequest dto,
+            @ModelAttribute AgentCreateDtoRequest dto,
             HttpServletRequest http
     ){
         // Log agent creation request with email
