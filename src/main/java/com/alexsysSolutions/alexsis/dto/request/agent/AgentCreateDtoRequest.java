@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -29,7 +30,7 @@ public class AgentCreateDtoRequest {
     @NotBlank(message = "password is required")
     @Size(min = 6, message = "the password must be at least 6 character")
     private String password;
-    private String profilePicture;
+    private MultipartFile profilePicture;
     private String phoneNumber;
 
     // agent info
