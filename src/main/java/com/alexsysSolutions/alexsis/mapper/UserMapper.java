@@ -11,6 +11,7 @@ public interface UserMapper {
 
     UserDtoResponse toDto(User user);
 
+    @Mapping(target = "profilePicture", ignore = true)
     User toEntity(UserCreateDtoRequest dto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
