@@ -39,7 +39,7 @@ public class ClientController {
     @Operation(summary = "Create a new client", description = "Create a client with basic user details")
     @PostMapping
     public ResponseEntity<ApiResponse<ClientDtoResponse>> create(
-            @Valid @RequestBody ClientCreateDtoRequest dto,
+            @Valid @ModelAttribute ClientCreateDtoRequest dto,
             HttpServletRequest http
     ) {
         logger.info("POST /api/v1/admin/clients - Creating client with email: {}", dto.getEmail());
