@@ -15,7 +15,9 @@ public interface AgentMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "password", ignore = true)
+
     void updateEntity(AgentUpdateDtoRequest dto, @MappingTarget Agent agent);
 
+    @Mapping(target = "profilePicture", ignore = true)
     Agent toEntity(AgentCreateDtoRequest dto);
 }
