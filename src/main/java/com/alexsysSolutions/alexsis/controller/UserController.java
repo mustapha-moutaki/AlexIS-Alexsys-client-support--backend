@@ -38,7 +38,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<UserDtoResponse>>create(
             @Valid
-            @RequestBody UserCreateDtoRequest dto,
+            @ModelAttribute UserCreateDtoRequest dto,
             HttpServletRequest request
     ){
         logger.info("st: POST /api/v1/users - Creating user with email: {}", dto.getEmail());   
