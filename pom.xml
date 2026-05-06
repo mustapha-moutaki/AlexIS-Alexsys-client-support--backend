@@ -141,6 +141,21 @@
 			<scope>test</scope>
 		</dependency>
 
+<!-- to Store immages -->
+		<!-- Your existing Cloudinary dependency -->
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.39.0</version>
+		</dependency>
+
+		<!-- Force update of the vulnerable transitive dependency -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.18.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
