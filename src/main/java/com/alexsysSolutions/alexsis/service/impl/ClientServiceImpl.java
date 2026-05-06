@@ -27,6 +27,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service
@@ -40,6 +41,8 @@ public class ClientServiceImpl implements ClientService {
     private final CurrentUserProvider currentUser;
     private static final Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryService cloudinaryService;
+
     @Override
     public ClientDtoResponse create(ClientCreateDtoRequest dto) {
         logger.info("Creating new client with email: {}", dto.getEmail());
@@ -60,7 +63,6 @@ public class ClientServiceImpl implements ClientService {
         client.setUsername(dto.getUsername());
         client.setEmail(dto.getEmail());
         client.setPassword(PasswordUtil.hash(dto.getPassword()));
-        client.setProfilePicture(dto.getProfilePicture());
         client.setPhoneNumber(dto.getPhoneNumber());
         client.setRole(UserRole.CLIENT);
         client.setRegistrationDate(LocalDateTime.now());
@@ -68,6 +70,16 @@ public class ClientServiceImpl implements ClientService {
         client.setDeleted(false);
         client.setCreatedBy(currentUser.getEmail());
 
+        if( dto.getProfilePicture() !=  null && !dto.getProfilePicture().isEmpty()){
+            logger.info("Uploading profile picture for client: {}", dto.getEmail());
+           try{
+               String imageUrl = cloudinaryService.upload(dto.getProfilePicture());
+               client.setProfilePicture(imageUrl);
+               logger.info("Client profile picture uploaded successfully");
+           }catch (Exception e){
+               throw new RuntimeException("Failed to upload profile picture", e);
+           }
+        }
         Client savedClient = clientRepository.save(client);
         logger.info("Client created successfully with ID: {}", savedClient.getId());
         return clientMapper.toDto(savedClient);
