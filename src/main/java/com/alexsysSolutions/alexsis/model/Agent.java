@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 
-@SQLDelete(sql = "UPDATE agents SET is_deleted = true, is_active = false WHERE id = ?")
 public class Agent extends User{
 
     @Column(name = "specialization", nullable = false)
