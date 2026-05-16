@@ -12,7 +12,16 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+//@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(
+        componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        uses = {
+                CommentMapper.class,
+                AttachmentMapper.class,
+                CategoryMapper.class
+        }
+)
 public interface TicketMapper {
 
     // =========================
@@ -23,7 +32,8 @@ public interface TicketMapper {
             @Mapping(target = "clientName", expression = "java(ticket.getClient().getFirstName() + \" \" + ticket.getClient().getLastName())"),
             @Mapping(target = "assignedToName", expression = "java(ticket.getAssignedTo() != null ? ticket.getAssignedTo().getFirstName() + \" \" + ticket.getAssignedTo().getLastName() : null)"),
             @Mapping(source = "comments", target = "comments"),
-            @Mapping(source = "attachments", target = "attachments")
+            @Mapping(source = "attachments", target = "attachments"),
+//            @Mapping(source = "userId", target = "authorId")
     })
     TicketDetailDtoResponse toDtoDetailsResponse(Ticket ticket);
 
@@ -113,11 +123,4 @@ public interface TicketMapper {
     // =========================
     CategoryLiteDto toCategoryLiteDto(Category category);
 
-    CommentDtoResponse toCommentDto(Comment comment);
-
-    List<CommentDtoResponse> toCommentList(List<Comment> comments);
-
-    AttachmentDtoResponse toAttachmentDto(Attachment attachment);
-
-    List<AttachmentDtoResponse> toAttachmentList(List<Attachment> attachments);
 }
