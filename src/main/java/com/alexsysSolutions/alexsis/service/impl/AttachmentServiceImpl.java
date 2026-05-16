@@ -8,7 +8,9 @@ import com.alexsysSolutions.alexsis.exception.ResourceNotFoundException;
 import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.mapper.AttachmentMapper;
 import com.alexsysSolutions.alexsis.model.Attachment;
+import com.alexsysSolutions.alexsis.model.Ticket;
 import com.alexsysSolutions.alexsis.reposiotry.AttachmentRepository;
+import com.alexsysSolutions.alexsis.reposiotry.TicketRepository;
 import com.alexsysSolutions.alexsis.service.AttachmentService;
 import com.alexsysSolutions.alexsis.service.FileStorageService;
 
@@ -32,6 +34,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     private final AttachmentRepository attachmentRepository;
     private final AttachmentMapper attachmentMapper;
+    private final TicketRepository ticketRepository;
     private final FileStorageService fileStorageService;
 
     @Override
@@ -60,6 +63,11 @@ public class AttachmentServiceImpl implements AttachmentService {
             attachment.setFileUrl(fileUrl);
             attachment.setUploadedAt(LocalDateTime.now());
             attachment.setStatus(AttachmentStatus.TEMP);
+
+            Ticket ticket = ticketRepository.findById(dto.getTicketId())
+                    .orElseThrow(() -> new ValidationException("Ticket not found"));
+
+            attachment.setTicket(ticket);
 
             // Save in DB
             Attachment saved = attachmentRepository.save(attachment);
