@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.access.AccessDeniedException;
 
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -138,6 +140,21 @@ public class GlobalExceptionHandler {
                         HttpStatus.INTERNAL_SERVER_ERROR.value(),
                         "Internal server error",
                         request.getRequestURI()
+                ));
+    }
+
+
+    @ExceptionHandler({
+            org.springframework.web.multipart.MaxUploadSizeExceededException.class,
+            org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException.class
+    })
+    public ResponseEntity<?> handleFileTooLarge(Exception ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(Map.of(
+                        "success", false,
+                        "message", "File is too large. Please upload a file smaller than the allowed limit."
                 ));
     }
 }
