@@ -34,6 +34,8 @@ public interface TicketMapper {
             @Mapping(source = "comments", target = "comments"),
             @Mapping(source = "attachments", target = "attachments"),
 //            @Mapping(source = "userId", target = "authorId")
+            @Mapping(source = "client.id", target = "clientId"),
+            @Mapping(source = "assignedTo.id", target = "assignedToId")
     })
     TicketDetailDtoResponse toDtoDetailsResponse(Ticket ticket);
 
