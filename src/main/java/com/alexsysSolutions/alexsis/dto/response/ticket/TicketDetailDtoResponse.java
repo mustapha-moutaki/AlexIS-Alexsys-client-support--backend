@@ -29,7 +29,10 @@ public class TicketDetailDtoResponse {
     private CategoryLiteDto category;
 
     private String clientName;
+    private long clientId;
+
     private String assignedToName;
+    private Long assignedToId;
 
     private List<CommentDtoResponse> comments;
     private List<AttachmentDtoResponse> attachments;
