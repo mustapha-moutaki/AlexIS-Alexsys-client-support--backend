@@ -14,7 +14,7 @@ public class CommentDtoRequest {
     private String content;
     @NotNull(message = "ticket is required")
     private Long ticketId;
-    @NotNull(message = "author id is required")
-    private Long userId;
+//    @NotNull(message = "author id is required")
+//    private Long userId;
 
 }
