@@ -56,9 +56,11 @@ public class CommentServiceImpl implements CommentService {
         comment.setAuthor(currentUser.getCurrentUser().getUser());
         // save and return
         Comment savedComment = commentRepository.save(comment);
-        logger.info("Comment created successfully with ID: {}", savedComment.getId());
 
-        return commentMapper.toDto(savedComment);
+        Comment fullComment = commentRepository.findByIdWithAuthor(savedComment.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+
+        return commentMapper.toDto(fullComment);
     }
 
     @Override
