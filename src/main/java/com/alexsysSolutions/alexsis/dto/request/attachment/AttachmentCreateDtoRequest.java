@@ -14,4 +14,5 @@ public class AttachmentCreateDtoRequest {
 
     MultipartFile file;
     String uploadedBy;
+    private Long ticketId;
 }
