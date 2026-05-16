@@ -12,11 +12,13 @@ public interface CommentMapper {
 
     @Mapping(source = "author.username", target = "authorName")
     @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "author.id",  target = "authorId")
     CommentDtoResponse toDto(Comment comment);
+
+
     @Mappings({
             @Mapping(target ="ticket", ignore = true),
             @Mapping(target ="author", ignore = true)
     })
     Comment toEntity(CommentDtoRequest dto);
-
 }
