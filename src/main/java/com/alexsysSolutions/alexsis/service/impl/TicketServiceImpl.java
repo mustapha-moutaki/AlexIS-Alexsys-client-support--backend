@@ -397,6 +397,10 @@ public class TicketServiceImpl implements TicketService {
 
         // old agent
         if (ticket.getAssignedTo() instanceof Agent oldAgent) {
+            Agent agent = (Agent) ticket.getAssignedTo();
+            if(agent.getAvailabilityStatus() != AvailabilityStatus.AVAILABLE){
+                throw new ValidationException("Current assigned agent is not available");
+            }
             workloadService.decrementTicketsActiveCount(oldAgent);
             agentRepository.save(oldAgent);
         }
