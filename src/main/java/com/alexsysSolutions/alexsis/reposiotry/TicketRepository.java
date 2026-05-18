@@ -69,4 +69,28 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT count(t) FROM Ticket t WHERE FUNCTION('DATE', t.createdAt) = CURRENT_DATE")
     int totalTicketsToday();
 
+
+
+    // for graphs
+    @Query(value = """
+    SELECT 
+      TO_CHAR(t.created_at, 'Dy') AS day,
+      AVG(EXTRACT(EPOCH FROM (t.resolved_at - t.created_at)) / 60) AS avgMinutes
+    FROM tickets t
+    WHERE t.resolved_at IS NOT NULL
+    GROUP BY TO_CHAR(t.created_at, 'Dy')
+    ORDER BY MIN(t.created_at)
+    """, nativeQuery = true)
+        List<Object[]> getResolutionTimeTrend();
+
+    @Query(value = """
+    SELECT 
+      TO_CHAR(t.created_at, 'Dy') AS day,
+      COUNT(t.id) AS created,
+      COUNT(CASE WHEN t.resolved_at IS NOT NULL THEN 1 END) AS resolved
+    FROM tickets t
+    GROUP BY TO_CHAR(t.created_at, 'Dy')
+    ORDER BY MIN(t.created_at)
+    """, nativeQuery = true)
+        List<Object[]> getWeeklyTicketsStats();
 }
