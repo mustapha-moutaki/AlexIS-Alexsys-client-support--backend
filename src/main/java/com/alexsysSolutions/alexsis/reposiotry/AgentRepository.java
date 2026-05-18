@@ -1,5 +1,6 @@
 package com.alexsysSolutions.alexsis.reposiotry;
 
+import com.alexsysSolutions.alexsis.dto.response.dashboard.graphs.AgentLoadStatsDtoResponse;
 import com.alexsysSolutions.alexsis.model.Agent;
 import com.alexsysSolutions.alexsis.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -61,4 +62,22 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
     double avgLoadPerAgent();
 
     // riskDetected need to cal so in the service
+
+
+    // for the gragh
+    // Repository Query
+    @Query("""
+        SELECT new com.alexsysSolutions.alexsis.dto.response.dashboard.graphs.AgentLoadStatsDtoResponse(
+            CONCAT(a.firstName, ' ', a.lastName),
+            CAST(a.activeTicketsCount as long),
+            COUNT(t.id)
+        )
+        FROM Agent a
+        LEFT JOIN Ticket t 
+            ON t.assignedTo.id = a.id 
+            AND t.status = com.alexsysSolutions.alexsis.enums.TicketStatus.RESOLVED
+        GROUP BY a.id, a.firstName, a.lastName, a.activeTicketsCount
+        ORDER BY a.activeTicketsCount DESC
+        """)
+    List<AgentLoadStatsDtoResponse> getAgentLoadStats();
 }
