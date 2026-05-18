@@ -1,6 +1,9 @@
 package com.alexsysSolutions.alexsis.service.dashboardService;
 
+import com.alexsysSolutions.alexsis.dto.response.dashboard.graphs.AgentLoadStatsDtoResponse;
 import com.alexsysSolutions.alexsis.model.User;
+
+import java.util.List;
 
 public interface AgentStatsService {
      int totalAgents();
@@ -13,4 +16,6 @@ public interface AgentStatsService {
      double avgLoadPerAgent();
      User riskDetected();
 
+     // for graghs
+     List<AgentLoadStatsDtoResponse> getAgentLoadStats();
 }
