@@ -15,13 +15,14 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
     Optional<Agent>findByEmail(String email);
     Optional<Agent>findByUsername(String username);
 
+
     @Query("""
-    SELECT a FROM Agent a
-    WHERE a.active = true
-    AND a.availabilityStatus = AvailabilityStatus.AVAILABLE
-    AND a.activeTicketsCount < a.maxCapacity
-    ORDER BY a.activeTicketsCount ASC, a.lastAssignedAt ASC
-    """)
+SELECT a FROM Agent a
+WHERE a.active = true
+AND a.availabilityStatus = AvailabilityStatus.AVAILABLE
+AND a.activeTicketsCount < a.maxCapacity
+ORDER BY a.activeTicketsCount ASC, a.lastAssignedAt ASC
+""")
     List<Agent> findAvailableAgents();
 
     // This method retrieves all available agents who:
