@@ -1,11 +1,14 @@
 package com.alexsysSolutions.alexsis.service.impl.dashboardServiceImpl;
 
+import com.alexsysSolutions.alexsis.dto.response.dashboard.graphs.AgentLoadStatsDtoResponse;
 import com.alexsysSolutions.alexsis.model.User;
 import com.alexsysSolutions.alexsis.reposiotry.AgentRepository;
 import com.alexsysSolutions.alexsis.service.dashboardService.AgentStatsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -59,5 +62,10 @@ public class AgentStatsServiceImpl implements AgentStatsService {
                 .filter(agent -> agent.getActiveTicketsCount() > agent.getMaxCapacity())
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public List<AgentLoadStatsDtoResponse> getAgentLoadStats() {
+        return agentRepository.getAgentLoadStats();
     }
 }
