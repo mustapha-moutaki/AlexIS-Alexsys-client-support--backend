@@ -98,4 +98,15 @@ WHERE (:isVip IS NULL OR c.isVip = :isVip)
     @Query("SELECT c.registrationDate FROM Client c WHERE c.id = :clientId")
     LocalDateTime findRegistrationDateById(Long clientId);
 
+
+    // query for graghs
+    @Query(value = """
+    SELECT 
+      TO_CHAR(c.created_at, 'Dy') AS day,
+      AVG(c.satisfaction_score)::text AS score
+    FROM clients c
+    GROUP BY TO_CHAR(c.created_at, 'Dy')
+    ORDER BY MIN(c.created_at)
+    """, nativeQuery = true)
+        List<Object[]> getSatisfactionTrend();
 }
