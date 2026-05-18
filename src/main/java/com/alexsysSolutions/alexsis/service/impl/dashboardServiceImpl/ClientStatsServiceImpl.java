@@ -1,9 +1,12 @@
 package com.alexsysSolutions.alexsis.service.impl.dashboardServiceImpl;
 
+import com.alexsysSolutions.alexsis.dto.response.dashboard.graphs.SatisfactionTrendStatsDtoResponse;
 import com.alexsysSolutions.alexsis.reposiotry.ClientRepository;
 import com.alexsysSolutions.alexsis.service.dashboardService.ClientStatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +37,15 @@ public class ClientStatsServiceImpl implements ClientStatsService {
     @Override
     public int lowSatisfactionClients() {
         return clientRepository.countLowSatisfactionClients();
+    }
+
+    @Override
+    public List<SatisfactionTrendStatsDtoResponse> getSatisfactionTrendStats() {
+        return clientRepository.getSatisfactionTrend().stream()
+                .map(row -> new SatisfactionTrendStatsDtoResponse(
+                        (String) row[0],
+                        String.valueOf(row[1])
+                ))
+                .toList();
     }
 }
