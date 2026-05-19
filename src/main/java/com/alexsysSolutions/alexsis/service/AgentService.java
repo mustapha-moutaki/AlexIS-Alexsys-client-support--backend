@@ -3,7 +3,10 @@ package com.alexsysSolutions.alexsis.service;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.agent.AgentDtoResponse;
+import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface AgentService {
     AgentDtoResponse create(AgentCreateDtoRequest dto);
