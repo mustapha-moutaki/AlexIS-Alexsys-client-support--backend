@@ -1,5 +1,6 @@
 package com.alexsysSolutions.alexsis.reposiotry;
 
+import com.alexsysSolutions.alexsis.enums.TicketStatus;
 import com.alexsysSolutions.alexsis.model.Ticket;
 import org.apache.commons.text.translate.NumericEntityUnescaper;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     """)
     List<Ticket> findUnassignedTickets();
 
+    // get all ticket for single agent
+    List<Ticket> findAllByAssignedToId(Long agentId);
+    List<Ticket> findAllByAssignedToIdAndStatus(Long agentId, TicketStatus status);
 
     // for stats
     @Query("SELECT count (t) FROM Ticket t")
