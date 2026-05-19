@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/client/tickets")
 @RequiredArgsConstructor
 @Tag(name = "Client Ticket Management", description = "Endpoints for client ticket management")
-@PreAuthorize("hasRole('CLIENt')")
+@PreAuthorize("hasRole('CLIENT')")
 
 public class ClientTicketController {
 
