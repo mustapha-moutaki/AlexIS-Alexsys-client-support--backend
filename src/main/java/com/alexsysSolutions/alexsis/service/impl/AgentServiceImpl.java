@@ -3,6 +3,7 @@ package com.alexsysSolutions.alexsis.service.impl;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.agent.AgentDtoResponse;
+import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
 import com.alexsysSolutions.alexsis.enums.AgentLevel;
 import com.alexsysSolutions.alexsis.enums.AvailabilityStatus;
 import com.alexsysSolutions.alexsis.enums.UserRole;
@@ -23,6 +24,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Transactional
 @Service
