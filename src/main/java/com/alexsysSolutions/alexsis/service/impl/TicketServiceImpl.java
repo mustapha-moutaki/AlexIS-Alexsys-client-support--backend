@@ -433,4 +433,26 @@ public class TicketServiceImpl implements TicketService {
        return ticketMapper.toDtoSummaryResponse(updatedTicketPriority);
 
     }
+
+    @Override
+    public List<TicketSummaryDtoResponse> getAllAgentTickets(Long id, TicketStatus status) {
+
+        logger.info("GEt all ticket for agent with id: %s", id);
+        Agent agent = agentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Agent with this id: %s is not found", id)
+                ));
+        List<Ticket>tickets;
+        if(status != null){
+            logger.info("request contains param {}", status);
+            tickets = ticketRepository.findAllByAssignedToIdAndStatus(id, status);
+        } else {
+            logger.info("params not found in the request");
+            tickets = ticketRepository.findAllByAssignedToId(id);
+        }
+
+        return tickets.stream()
+                .map(ticketMapper::toDtoSummaryResponse)
+                .toList();
+    }
 }
