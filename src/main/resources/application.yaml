@@ -13,6 +13,7 @@ server:
   error:
     whitelabel:
       enabled: false
+
 jwt:
   secret: ${JWT_SECRET}
   access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
@@ -23,3 +24,9 @@ Cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME:df1wxfrxu}
   api-key: ${CLOUDINARY_API_KEY:999374551769874}
   api-secret: ${CLOUDINARY_API_SECRET:gDjccvOfg_fsnAoRid2U__dq1oA}
+#
+#  logging:
+#    level:
+#      org.springframework.web: DEBUG
+#      org.springframework.web.servlet.DispatcherServlet: DEBUG
+#      org.springframework.security: DEBUG
