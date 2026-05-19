@@ -7,6 +7,8 @@ import com.alexsysSolutions.alexsis.enums.Priority;
 import com.alexsysSolutions.alexsis.enums.TicketStatus;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface TicketService {
 
     TicketDetailDtoResponse create(TicketCreateCommand command);
@@ -30,4 +32,8 @@ public interface TicketService {
      TicketSummaryDtoResponse updateTicketStatus(Long ticketId, TicketUpdateStatusDtoRequest dto);
      TicketSummaryDtoResponse reAssignedTicket(Long ticketId, Long agentId);
      TicketSummaryDtoResponse updateTicketPriority(Long ticketId, Priority priority);
+
+     // for agent
+     List<TicketSummaryDtoResponse> getAllAgentTickets(Long id, TicketStatus status);
+
 }
