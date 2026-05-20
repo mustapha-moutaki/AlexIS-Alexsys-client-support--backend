@@ -341,10 +341,30 @@ public class TicketServiceImpl implements TicketService {
         TicketStatus currentStatus = ticket.getStatus();
         TicketStatus newStatus = dto.getStatus();
 
+        // last changes +1
+        boolean isAdmin = currentUser.getRole() == UserRole.ADMIN;
+        boolean isAgent = currentUser.getRole() == UserRole.AGENT;
+        // last changes +1
+        if (!isAdmin && !isAgent) {
+            throw new ValidationException("Unauthorized role");
+        }
+
         //cannot change a CLOSED ticket
         if (currentStatus == TicketStatus.CLOSED) {
             throw new ValidationException("You cannot change the status of a CLOSED ticket");
         }
+
+        // last changes +1
+        if(isAgent){
+            // agent only can change ticket status from inProgress to Resolved
+            if (!(currentStatus == TicketStatus.IN_PROGRESS
+                    && newStatus == TicketStatus.RESOLVED)) {
+
+                throw new ValidationException("Invalid status change for agent");
+            }
+        }
+
+
 
 
         ticket.setStatus(newStatus);
@@ -454,5 +474,25 @@ public class TicketServiceImpl implements TicketService {
         return tickets.stream()
                 .map(ticketMapper::toDtoSummaryResponse)
                 .toList();
+    }
+
+    @Override
+    public TicketDetailDtoResponse getTicketByIdForAgent(Long ticketId) {
+        User agent = currentUser.getCurrentUser().getUser();
+        logger.info("---------------------------------------------------");
+        logger.info("getting authenticated user {}", agent.getId());
+        if (!agent.isActive()){
+            throw new ValidationException("This user is not active");
+        };
+
+
+        Ticket ticket =ticketRepository.findByIdAndAssignedToId(ticketId, agent.getId()).orElseThrow(
+                ()-> new ResourceNotFoundException("cannot find ticket with this id")
+        );
+        logger.info("---------------------------------------------------");
+        logger.info("ticket founded {}", ticket);
+
+        return ticketMapper.toDtoDetailsResponse(ticket);
+
     }
 }
