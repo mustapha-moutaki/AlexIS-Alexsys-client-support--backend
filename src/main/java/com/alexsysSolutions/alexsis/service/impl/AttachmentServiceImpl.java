@@ -9,8 +9,10 @@ import com.alexsysSolutions.alexsis.exception.ValidationException;
 import com.alexsysSolutions.alexsis.mapper.AttachmentMapper;
 import com.alexsysSolutions.alexsis.model.Attachment;
 import com.alexsysSolutions.alexsis.model.Ticket;
+import com.alexsysSolutions.alexsis.model.User;
 import com.alexsysSolutions.alexsis.reposiotry.AttachmentRepository;
 import com.alexsysSolutions.alexsis.reposiotry.TicketRepository;
+import com.alexsysSolutions.alexsis.security.context.CurrentUserProvider;
 import com.alexsysSolutions.alexsis.service.AttachmentService;
 import com.alexsysSolutions.alexsis.service.FileStorageService;
 
@@ -37,8 +39,12 @@ public class AttachmentServiceImpl implements AttachmentService {
     private final TicketRepository ticketRepository;
     private final FileStorageService fileStorageService;
 
+    private final CurrentUserProvider currentUserProvider;
+    // latest change +1
     @Override
     public AttachmentDtoResponse create(AttachmentCreateDtoRequest dto) {
+
+        User user = currentUserProvider.getCurrentUser().getUser();
 
         if (dto.getFile() == null || dto.getFile().isEmpty()) {
             throw new ValidationException("File is required");
@@ -63,6 +69,7 @@ public class AttachmentServiceImpl implements AttachmentService {
             attachment.setFileUrl(fileUrl);
             attachment.setUploadedAt(LocalDateTime.now());
             attachment.setStatus(AttachmentStatus.TEMP);
+            attachment.setUploadedBy(currentUserProvider.getCurrentUser().getUser());
 
             Ticket ticket = ticketRepository.findById(dto.getTicketId())
                     .orElseThrow(() -> new ValidationException("Ticket not found"));
