@@ -4,10 +4,13 @@ import com.alexsysSolutions.alexsis.dto.request.attachment.AttachmentCreateDtoRe
 import com.alexsysSolutions.alexsis.dto.response.attachment.AttachmentDtoResponse;
 import com.alexsysSolutions.alexsis.model.Attachment;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface AttachmentMapper {
 
+    @Mapping(target = "uploadedById", source = "uploadedBy.id")
+    @Mapping(target = "uploadedByName", expression = "java(attachment.getUploadedBy().getFirstName() + \" \" + attachment.getUploadedBy().getLastName())")
     AttachmentDtoResponse toDto(Attachment attachment);
     Attachment toEntity(AttachmentCreateDtoRequest dto);
 }
