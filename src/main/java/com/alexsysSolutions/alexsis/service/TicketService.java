@@ -36,4 +36,9 @@ public interface TicketService {
      // for agent
      List<TicketSummaryDtoResponse> getAllAgentTickets(Long id, TicketStatus status);
 
+    /**
+
+     * @return ticket by the id but assigned to agent id
+     */
+     TicketDetailDtoResponse getTicketByIdForAgent(Long ticketId);
 }
