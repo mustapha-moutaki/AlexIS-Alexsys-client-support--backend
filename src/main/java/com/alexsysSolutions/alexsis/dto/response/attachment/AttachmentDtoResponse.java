@@ -17,4 +17,6 @@ public class AttachmentDtoResponse {
     private String fileUrl;
     private String fileType;
     private LocalDateTime uploadedAt;
+    private Long uploadedById;
+    private String uploadedByName;
 }
