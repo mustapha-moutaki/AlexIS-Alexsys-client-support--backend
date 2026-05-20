@@ -63,3 +63,8 @@ databaseChangeLog:
         file: db/changelog/changes/033-update-dataType-isVip-column-clients-table.yml
   - include:
       file: db/changelog/changes/034-alter-isVip-to-boolean.yml
+
+  - include:
+      file: db/changelog/changes/035-add-column-to-attachments-table.yml
+  - include:
+      file: db/changelog/changes/036-add-fk-attachments-users-tables.yml
