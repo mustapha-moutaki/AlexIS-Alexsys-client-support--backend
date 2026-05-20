@@ -47,4 +47,9 @@ public class Attachment {
         this.uploadedAt = LocalDateTime.now();
     }
 
+    // latest change +1
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "uploaded_by_id", nullable = false)
+    private User uploadedBy;
+
 }
