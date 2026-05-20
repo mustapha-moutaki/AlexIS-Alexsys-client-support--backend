@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      author: mustapha-moutaki
+      id: 035-add-column-to-attachments-table
+      changes:
+        - addColumn:
+            tableName: attachments
+            columns:
+              - column:
+                  name: uploaded_by_id
+                  type: BIGINT
+                  constraints:
+                    nullable: true
