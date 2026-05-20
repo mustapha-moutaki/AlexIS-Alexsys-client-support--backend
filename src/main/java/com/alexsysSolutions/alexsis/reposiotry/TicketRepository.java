@@ -42,7 +42,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     // get all ticket for single agent
     List<Ticket> findAllByAssignedToId(Long agentId);
     List<Ticket> findAllByAssignedToIdAndStatus(Long agentId, TicketStatus status);
-
+    Optional<Ticket>findByIdAndAssignedToId(Long ticketId, Long agentId);
     // for stats
     @Query("SELECT count (t) FROM Ticket t")
     int totalTickets();
