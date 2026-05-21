@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AttachmentCreateDtoRequest {
 
     MultipartFile file;
-    String uploadedBy;
     private Long ticketId;
+    private Long uploadedById;
+    private String uploadedByName;
 }
