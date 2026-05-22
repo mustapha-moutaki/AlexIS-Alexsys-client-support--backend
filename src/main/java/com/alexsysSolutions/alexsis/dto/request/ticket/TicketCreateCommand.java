@@ -29,4 +29,5 @@ public class TicketCreateCommand {
     private Long clientId;
     private Long assignedToId;
     List<Long> attachmentIds;
+    private Long commentId;
 }
