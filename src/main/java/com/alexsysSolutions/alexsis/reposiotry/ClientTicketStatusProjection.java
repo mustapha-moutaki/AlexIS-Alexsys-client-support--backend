@@ -4,15 +4,15 @@ public interface ClientTicketStatusProjection {
 
     int getTotalTickets();
 
-    int getOpenTickets();
+    Integer getOpenTickets();
 
-    int getInProgressTickets();
+    Integer getInProgressTickets();
 
-    int getResolvedTickets();
+    Integer getResolvedTickets();
 
-    int getClosedTickets();
+    Integer getClosedTickets();
 
-    int getTicketsCreatedToday();
+    Integer getTicketsCreatedToday();
 
 
 }
