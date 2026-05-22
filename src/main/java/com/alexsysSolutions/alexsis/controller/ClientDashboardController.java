@@ -44,6 +44,9 @@ public class ClientDashboardController {
         ApiResponse<ClientDashboardOverViewDtoResponse> response =
                 ApiResponse.success("Client dashboard overview retrieved successfully", clientDashboard);
 
+
+        logger.info("-------------------------------");
+        logger.info("client dashaboard stats: {}", response.getData());
         response.setStatus(HttpStatus.OK.value());
         response.setPath(http.getRequestURI());
 
