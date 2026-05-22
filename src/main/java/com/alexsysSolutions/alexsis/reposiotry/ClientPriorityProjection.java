@@ -1,9 +1,9 @@
 package com.alexsysSolutions.alexsis.reposiotry;
 
 public interface ClientPriorityProjection {
-    int getHighPriorityTickets();
+    Integer getHighPriorityTickets();
 
-    int getMediumPriorityTickets();
+    Integer getMediumPriorityTickets();
 
-    int getLowPriorityTickets();
+    Integer getLowPriorityTickets();
 }
