@@ -2,6 +2,7 @@ package com.alexsysSolutions.alexsis.dto.request.ticket;
 
 import com.alexsysSolutions.alexsis.enums.IssueType;
 import com.alexsysSolutions.alexsis.enums.Priority;
+import com.alexsysSolutions.alexsis.model.Comment;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -24,7 +25,8 @@ public class TicketCreateByClientDto {
     private Priority priority;
     @NotNull(message = "issue type is required")
     private IssueType issueType;
-    @NotBlank(message = "category is required")
+    @NotNull(message = "Category is required")
     private Long categoryId;
     private List<Long> attachmentIds = new ArrayList<>();
+    private Long commentId;
 }
