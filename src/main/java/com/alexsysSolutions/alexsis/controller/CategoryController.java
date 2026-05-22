@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "category managment", description = "endpoints for managing categories")
 public class CategoryController {
 
@@ -30,6 +29,7 @@ public class CategoryController {
     // Create a new category
     @Operation(summary = "create new category")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CategoryDtoResponse>> create(
             @Valid
             @RequestBody CategoryDtoRequest dto,
@@ -48,6 +48,7 @@ public class CategoryController {
     @Operation(summary = "update category")
     // Update an existing category
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CategoryDtoResponse>> update(
             @PathVariable Long id,
             @Valid
@@ -68,6 +69,7 @@ public class CategoryController {
     @Operation(summary = "get category")
     // Get category by id
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<CategoryDtoResponse>> getById(
             @PathVariable Long id,
             HttpServletRequest request
@@ -86,6 +88,7 @@ public class CategoryController {
     @Operation(summary = "get List of categories")
     // Get all categories with pagination and search
     @GetMapping
+    @PreAuthorize("hasAnyRole('CLIENT', 'ADMIN', 'AGENT')")
     public ResponseEntity<ApiResponse<Page<CategoryDtoResponse>>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -107,6 +110,7 @@ public class CategoryController {
     @Operation(summary = "delete category")
     // Delete a category
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long id,
             HttpServletRequest request
