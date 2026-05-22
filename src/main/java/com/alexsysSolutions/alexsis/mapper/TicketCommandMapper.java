@@ -33,6 +33,7 @@ public class TicketCommandMapper {
                 .issueType(dto.getIssueType())
                 .categoryId(dto.getCategoryId())
                 .clientId(clientId)
+                .commentId(dto.getCommentId())
                 .build();
     }
 
