@@ -24,6 +24,15 @@ Cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME:df1wxfrxu}
   api-key: ${CLOUDINARY_API_KEY:999374551769874}
   api-secret: ${CLOUDINARY_API_SECRET:gDjccvOfg_fsnAoRid2U__dq1oA}
+
+# open ai
+gemini:
+  api:
+    key: ${OPENAI_API_KEY}
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
+#    url: https://api.openai.com/v1/chat/completions
+    model: gpt-4o-mini
+    timeout: 10s
 #
 #  logging:
 #    level:
