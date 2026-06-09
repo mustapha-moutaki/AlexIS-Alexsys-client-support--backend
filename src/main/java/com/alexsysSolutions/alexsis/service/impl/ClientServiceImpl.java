@@ -1,5 +1,7 @@
 package com.alexsysSolutions.alexsis.service.impl;
 
+
+import com.alexsysSolutions.alexsis.client.EmailClient;
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientUpdateByAdminDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientUpdateProfileDtoRequest;
@@ -32,8 +34,6 @@ import java.time.LocalDateTime;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
-
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
@@ -42,6 +42,26 @@ public class ClientServiceImpl implements ClientService {
     private static final Logger logger = LoggerFactory.getLogger(ClientServiceImpl.class);
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
+    private final EmailTemplateService templateService;
+    private EmailClient emailClient;
+
+    public ClientServiceImpl(
+            ClientRepository clientRepository,
+            ClientMapper clientMapper,
+            CurrentUserProvider currentUser,
+            PasswordEncoder passwordEncoder,
+            CloudinaryService cloudinaryService,
+            EmailTemplateService templateService,
+            EmailClient emailClient
+    ) {
+        this.clientRepository = clientRepository;
+        this.clientMapper = clientMapper;
+        this.currentUser = currentUser;
+        this.passwordEncoder = passwordEncoder;
+        this.cloudinaryService = cloudinaryService;
+        this.templateService = templateService;
+        this.emailClient = emailClient;
+    }
 
     @Override
     public ClientDtoResponse create(ClientCreateDtoRequest dto) {
@@ -81,6 +101,24 @@ public class ClientServiceImpl implements ClientService {
            }
         }
         Client savedClient = clientRepository.save(client);
+
+        // Email service
+        String adminEmailNotification = templateService.buildAdminNotificationTemplate(savedClient.getUsername(), savedClient.getEmail(), savedClient.getRole());
+        String welcomeEmail = templateService.buildWelcomeEmailTemplate(savedClient.getUsername());
+
+        emailClient.sendEmail(
+                currentUser.getEmail(),
+                "You just created new Client \" " + savedClient.getUsername() + "\" successfully.",
+                adminEmailNotification
+        );
+
+        emailClient.sendEmail(
+                savedClient.getEmail(),
+                "Welcome " + savedClient.getUsername() + "!",
+                welcomeEmail
+        );
+
+        logger.info("Sending welcome email to new user...");
         logger.info("Client created successfully with ID: {}", savedClient.getId());
         return clientMapper.toDto(savedClient);
     }
