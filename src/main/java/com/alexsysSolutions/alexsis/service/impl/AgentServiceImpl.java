@@ -1,5 +1,6 @@
 package com.alexsysSolutions.alexsis.service.impl;
 
+import com.alexsysSolutions.alexsis.client.EmailClient;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.agent.AgentDtoResponse;
@@ -38,6 +39,9 @@ public class AgentServiceImpl implements AgentService {
     private static final Logger logger = LoggerFactory.getLogger(AgentServiceImpl.class);
     private final CurrentUserProvider currentUser;
     private final CloudinaryService cloudinaryService;
+    private final EmailTemplateService templateService;
+    private final EmailClient emailClient;
+
     @Override
     public AgentDtoResponse create(AgentCreateDtoRequest dto) {
         logger.info(" Creating new agent with email: {}", dto.getEmail());
@@ -85,6 +89,22 @@ public class AgentServiceImpl implements AgentService {
             }
         }
         Agent savedAgent = agentRepository.save(agent);
+        // Email service
+        String adminEmailNotification = templateService.buildAdminNotificationTemplate(savedAgent.getUsername(), savedAgent.getEmail(), savedAgent.getRole());
+        String welcomeEmail = templateService.buildWelcomeEmailTemplate(savedAgent.getUsername());
+
+        emailClient.sendEmail(
+                currentUser.getEmail(),
+                "You just created new Agent  \" " + savedAgent.getUsername() + "\" successfully.",
+                adminEmailNotification
+        );
+        logger.info("Admin notified about new agent creation: {}", savedAgent.getUsername());
+        emailClient.sendEmail(
+                savedAgent.getEmail(),
+                "Welcome " + savedAgent.getUsername() + "!",
+                welcomeEmail
+        );
+        logger.info("Agent notified with welcome email: {}", savedAgent.getEmail());
         logger.info("Agent created successfully with id: {}", savedAgent.getId());
         return agentMapper.toDto(savedAgent);
     }
