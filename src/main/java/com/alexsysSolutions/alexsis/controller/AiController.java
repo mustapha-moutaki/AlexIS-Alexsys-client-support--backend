@@ -1,27 +1,34 @@
 package com.alexsysSolutions.alexsis.controller;
 
-import com.alexsysSolutions.alexsis.dto.request.ai.AiDtoRequest;
-
-import com.alexsysSolutions.alexsis.service.impl.AiService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import com.alexsysSolutions.alexsis.service.impl.GroqService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
+
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/ai")
+@Tag(name = "Ai assistant")
 public class AiController {
 
-    private final AiService aiService;
+    private final GroqService groqService;
 
-    public AiController(AiService aiService) {
-        this.aiService = aiService;
+    public AiController(GroqService groqService){
+        this.groqService = groqService;
     }
 
-    @PostMapping("/ask")
-    public ResponseEntity<?> ask(@RequestBody AiDtoRequest request) {
+    @PostMapping("/chat")
+    @Operation(summary = "Chat with AI", description = "get help with alex intelligent support")
+    public Map<String, String> chat(@RequestBody Map<String, String> request) {
+        // Extract "question" from the incoming JSON
+        String userQuestion = request.get("question");
 
-        String response = aiService.ask(request.getMessage());
+        // Get only the text response from the service
+        String aiResponse = groqService.askGroq(userQuestion);
 
-        return ResponseEntity.ok(response);
+        // Return as a clean JSON object: {"reply": "..."}
+        return Map.of("reply", aiResponse);
     }
 }
