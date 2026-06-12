@@ -52,7 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
                         .requestMatchers("/api/v1/users/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/v1/ai/ask", "/api/v1/ai/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/v1/ai/ask", "/api/v1/ai/**").permitAll() // for all users
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
