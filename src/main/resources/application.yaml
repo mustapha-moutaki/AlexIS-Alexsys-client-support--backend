@@ -26,14 +26,11 @@ Cloudinary:
   api-secret: ${CLOUDINARY_API_SECRET:gDjccvOfg_fsnAoRid2U__dq1oA}
 
 # open ai
-gemini:
-  api:
-    key: ${OPENAI_API_KEY}
-    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
-#    url: https://api.openai.com/v1/chat/completions
-    model: gpt-4o-mini
-    timeout: 10s
-#
+ai:
+  groq:
+    api-key: ${GROQ_API_KEY}
+    url: https://api.groq.com/openai/v1/chat/completions
+    model: llama-3.1-8b-instant
 #  logging:
 #    level:
 #      org.springframework.web: DEBUG
