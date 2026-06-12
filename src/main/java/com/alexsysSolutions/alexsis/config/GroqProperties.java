@@ -9,8 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 public class GroqProperties {
 
+
     private String apiKey;
     private String url;
     private String model;
+
 
 }
