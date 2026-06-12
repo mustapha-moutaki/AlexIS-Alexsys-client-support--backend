@@ -33,7 +33,12 @@ gemini:
 #    url: https://api.openai.com/v1/chat/completions
     model: gpt-4o-mini
     timeout: 10s
-#
+
+kafka:
+  bootstrap-servers: kafka:29092
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.apache.kafka.common.serialization.StringSerializer
 #  logging:
 #    level:
 #      org.springframework.web: DEBUG
