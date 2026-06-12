@@ -22,6 +22,7 @@ public class AiController {
     @PostMapping("/chat")
     @Operation(summary = "Chat with AI", description = "get help with alex intelligent support")
     public Map<String, String> chat(@RequestBody Map<String, String> request) {
+
         // Extract "question" from the incoming JSON
         String userQuestion = request.get("question");
 
