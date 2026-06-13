@@ -65,6 +65,7 @@ public class GroqService {
         }
     }
 
+
     private String extractContentFromResponse(String jsonResponse) {
         try {
             JsonNode root = objectMapper.readTree(jsonResponse);
