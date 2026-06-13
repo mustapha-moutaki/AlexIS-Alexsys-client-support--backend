@@ -15,7 +15,6 @@ import java.util.Map;
 @Service
 public class GroqService {
 
-
     private final RestTemplate restTemplate;
     private final GroqProperties groqProperties;
     private final ObjectMapper objectMapper;
