@@ -69,7 +69,7 @@ public class GroqService {
     private String extractContentFromResponse(String jsonResponse) {
         try {
             JsonNode root = objectMapper.readTree(jsonResponse);
-
+// get the first and only message
             JsonNode contentNode = root.path("choices").get(0).path("message").path("content");
 
             if (contentNode.isMissingNode()) {
