@@ -69,7 +69,7 @@ public class GroqService {
     private String extractContentFromResponse(String jsonResponse) {
         try {
             JsonNode root = objectMapper.readTree(jsonResponse);
-            // This navigates the OpenAI/Groq JSON structure: choices[0].message.content
+
             JsonNode contentNode = root.path("choices").get(0).path("message").path("content");
 
             if (contentNode.isMissingNode()) {
