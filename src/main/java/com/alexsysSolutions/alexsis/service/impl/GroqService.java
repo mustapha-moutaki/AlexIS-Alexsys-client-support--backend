@@ -19,6 +19,7 @@ public class GroqService {
     private final GroqProperties groqProperties;
     private final ObjectMapper objectMapper;
 
+
     public GroqService(GroqProperties groqProperties) {
         this.groqProperties = groqProperties;
         this.restTemplate = new RestTemplate();
