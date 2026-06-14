@@ -32,7 +32,7 @@ databaseChangeLog:
 
                    - column:
                          name: created_by
-                         type: bigint
+                         type: varchar(255)
                          constraints:
                                 nullable: true
 

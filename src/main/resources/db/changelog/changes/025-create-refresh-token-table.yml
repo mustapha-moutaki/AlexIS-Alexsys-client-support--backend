@@ -30,5 +30,5 @@ databaseChangeLog:
                   type: boolean
 
               - column:
-                  name: expiryDate
+                  name: expiry_date
                   type: datetime

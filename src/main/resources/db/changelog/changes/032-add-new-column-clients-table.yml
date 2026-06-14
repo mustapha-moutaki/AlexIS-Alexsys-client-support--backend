@@ -12,6 +12,6 @@ databaseChangeLog:
 
               - column:
                   name: is_vip
-                  type: varchar(255)
+                  type: boolean
                   constraints:
                     nullable: true

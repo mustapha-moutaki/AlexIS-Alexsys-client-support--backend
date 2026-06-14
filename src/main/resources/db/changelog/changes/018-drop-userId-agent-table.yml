@@ -1,8 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: 018-drop-userId-agent-table
-      author: mustaphamoutaki
-      changes:
-        - dropColumn:
-            tableName: agents
-            columnName: user_id

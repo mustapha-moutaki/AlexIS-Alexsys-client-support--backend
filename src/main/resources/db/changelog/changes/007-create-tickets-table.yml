@@ -36,7 +36,7 @@ databaseChangeLog:
 
               - column:
                   name: priority
-                  type: integer
+                  type: varchar(30)
                   constraints:
                     nullable: false
 
@@ -50,11 +50,11 @@ databaseChangeLog:
                   name: category_id
                   type: bigint
                   constraints:
-                    nullable: true
+                    nullable: false
 
               - column:
                   name: created_by
-                  type: bigint
+                  type: varchar(50)
                   constraints:
                     nullable: false
 

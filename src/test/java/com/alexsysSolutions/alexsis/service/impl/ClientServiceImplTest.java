@@ -13,6 +13,7 @@ import com.alexsysSolutions.alexsis.model.Client;
 import com.alexsysSolutions.alexsis.reposiotry.ClientRepository;
 import com.alexsysSolutions.alexsis.security.context.CurrentUserProvider;
 import com.alexsysSolutions.alexsis.service.ClientService;
+import com.alexsysSolutions.alexsis.client.EmailClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,15 @@ class ClientServiceImplTest {
     @Mock
     private CurrentUserProvider currentUser;
 
+    @Mock
+    private CloudinaryService cloudinaryService;
+
+    @Mock
+    private EmailTemplateService templateService;
+
+    @Mock
+    private EmailClient emailClient;
+
     @InjectMocks
     private ClientServiceImpl clientService;
 
@@ -66,12 +76,20 @@ class ClientServiceImplTest {
 
         Client savedClient = new Client();
         savedClient.setId(1L);
+        savedClient.setUsername("mustapha");
+        savedClient.setEmail("test@gmail.com");
+        savedClient.setRole(UserRole.CLIENT);
 
         when(clientRepository.save(any(Client.class)))
                 .thenReturn(savedClient);
 
         when(clientMapper.toDto(any(Client.class)))
                 .thenReturn(new ClientDtoResponse());
+
+        when(templateService.buildAdminNotificationTemplate(any(), any(), any()))
+                .thenReturn("admin notification template");
+        when(templateService.buildWelcomeEmailTemplate(any()))
+                .thenReturn("welcome template");
 
         ClientDtoResponse result = clientService.create(request);
 

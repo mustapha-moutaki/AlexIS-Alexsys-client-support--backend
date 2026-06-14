@@ -41,6 +41,7 @@ public class Agent extends User{
 
     private Integer maxCapacity;
     private LocalDateTime lastAssignedAt;
+    @Enumerated(EnumType.STRING)
     private AgentLevel level;
 
 }

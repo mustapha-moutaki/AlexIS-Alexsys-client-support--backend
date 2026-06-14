@@ -9,8 +9,6 @@ spring:
   error:
     include-message: always
     include-binding-errors: always
-  liquibase:
-    drop-first: true
 server:
   error:
     whitelabel:

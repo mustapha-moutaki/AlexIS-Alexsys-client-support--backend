@@ -1,9 +1,0 @@
-databaseChangeLog:
-      - changeSet:
-          id: 020-fix-created-by-type-categories
-          author: mustaphamoutaki
-          changes:
-            - modifyDataType:
-                tableName: categories
-                columnName: created_by
-                newDataType: varchar(255)
