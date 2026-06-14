@@ -1,10 +1,8 @@
 package com.alexsysSolutions.alexsis.service.impl;
 
-import com.alexsysSolutions.alexsis.client.EmailClient;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.agent.AgentUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.agent.AgentDtoResponse;
-import com.alexsysSolutions.alexsis.dto.response.ticket.TicketDetailDtoResponse;
 import com.alexsysSolutions.alexsis.enums.AgentLevel;
 import com.alexsysSolutions.alexsis.enums.AvailabilityStatus;
 import com.alexsysSolutions.alexsis.enums.UserRole;
@@ -26,8 +24,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -40,7 +36,7 @@ public class AgentServiceImpl implements AgentService {
     private final CurrentUserProvider currentUser;
     private final CloudinaryService cloudinaryService;
     private final EmailTemplateService templateService;
-    private final EmailClient emailClient;
+    private final UserEventProducer userEventProducer;
 
     @Override
     public AgentDtoResponse create(AgentCreateDtoRequest dto) {
@@ -93,17 +89,12 @@ public class AgentServiceImpl implements AgentService {
         String adminEmailNotification = templateService.buildAdminNotificationTemplate(savedAgent.getUsername(), savedAgent.getEmail(), savedAgent.getRole());
         String welcomeEmail = templateService.buildWelcomeEmailTemplate(savedAgent.getUsername());
 
-        emailClient.sendEmail(
-                currentUser.getEmail(),
-                "You just created new Agent  \" " + savedAgent.getUsername() + "\" successfully.",
-                adminEmailNotification
-        );
-        logger.info("Admin notified about new agent creation: {}", savedAgent.getUsername());
-        emailClient.sendEmail(
+        userEventProducer.SendUserCreatedEvent(
                 savedAgent.getEmail(),
-                "Welcome " + savedAgent.getUsername() + "!",
-                welcomeEmail
+                savedAgent.getUsername(),
+                currentUser.getEmail()
         );
+
         logger.info("Agent notified with welcome email: {}", savedAgent.getEmail());
         logger.info("Agent created successfully with id: {}", savedAgent.getId());
         return agentMapper.toDto(savedAgent);
