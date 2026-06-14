@@ -15,6 +15,7 @@ public class AiPrompts {
         - Agents work on assigned tickets.
         - Alexis supports intelligent ticket assignment based on expertise, workload, availability, and priority.
 
+
         Responsibilities:
         - Explain platform features.
         - Help users understand workflows.
