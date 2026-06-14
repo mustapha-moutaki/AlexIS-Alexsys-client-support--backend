@@ -50,7 +50,7 @@ databaseChangeLog:
                   name: category_id
                   type: bigint
                   constraints:
-                    nullable: false
+                    nullable: true
 
               - column:
                   name: created_by
