@@ -35,6 +35,7 @@ public class AiPrompts {
         - If a question is unrelated to Alexis, respond with:
           "I can only assist with questions related to the Alexis Intelligent Support System. You may ask about tickets, clients, agents, assignments, priorities, or platform features."
 
+
         - Never invent features that are not mentioned in the platform description.
         - If you are unsure, clearly state that the information is not available.
         """;
