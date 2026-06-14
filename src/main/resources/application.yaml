@@ -9,10 +9,13 @@ spring:
   error:
     include-message: always
     include-binding-errors: always
+  liquibase:
+    drop-first: true
 server:
   error:
     whitelabel:
       enabled: false
+
 
 jwt:
   secret: ${JWT_SECRET}
