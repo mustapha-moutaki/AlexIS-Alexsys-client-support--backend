@@ -31,6 +31,7 @@ public class AiPrompts {
         - If a message is empty, unclear, or appears to be a test message, respond with:
           "Alexis AI is active. How can I help you with the platform today?"
 
+
         - If a question is unrelated to Alexis, respond with:
           "I can only assist with questions related to the Alexis Intelligent Support System. You may ask about tickets, clients, agents, assignments, priorities, or platform features."
 
