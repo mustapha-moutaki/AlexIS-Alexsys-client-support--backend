@@ -19,22 +19,23 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
 
     @Override
-    public void run(String... args) throws Exception {
-        boolean exists = userRepository.existsByRole(UserRole.SUPER_ADMIN);
+public void run(String... args) {
 
-        if(!exists){
-            User superAdmin = User.builder()
-                    .username("superadmin")
-                    .firstName("superadmin")
-                    .lastName("system")
-                    .email("superadmin@gmail.com")
-                    .password(PasswordUtil.hash("superadminpassword"))
-                    .role(UserRole.SUPER_ADMIN)
-                    .updatedAt(LocalDateTime.now())
-                    .createdBy("system-auto-run")
-                    .build();
+    boolean exists = userRepository.existsByEmail("superadmin@gmail.com");
 
-            userRepository.save(superAdmin);
-        }
+    if (!exists) {
+        User superAdmin = User.builder()
+                .username("superadmin")
+                .firstName("superadmin")
+                .lastName("system")
+                .email("superadmin@gmail.com")
+                .password(PasswordUtil.hash("superadminpassword"))
+                .role(UserRole.SUPER_ADMIN)
+                .updatedAt(LocalDateTime.now())
+                .createdBy("system-auto-run")
+                .build();
+
+        userRepository.save(superAdmin);
     }
+}
 }
