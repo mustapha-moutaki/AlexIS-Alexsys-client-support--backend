@@ -1,6 +1,5 @@
 package com.alexsysSolutions.alexsis.service.impl;
 
-import com.alexsysSolutions.alexsis.client.EmailClient;
 import com.alexsysSolutions.alexsis.dto.request.user.UserCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.user.UserUpdateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.response.user.UserDtoResponse;
@@ -43,7 +42,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final CurrentUserProvider currentUser;
     private final CloudinaryService cloudinaryService;
     private final EmailTemplateService templateService;
-    private final EmailClient emailClient; // responsable to send email
+    private final UserEventProducer userEventProducer;
+
 
     @Override
     public UserDtoResponse create(UserCreateDtoRequest dto) {
@@ -109,15 +109,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String adminEmailNotification = templateService.buildAdminNotificationTemplate(savedUser.getUsername(), savedUser.getEmail(), savedUser.getRole());
         String welcomeEmail = templateService.buildWelcomeEmailTemplate(savedUser.getUsername());
 
-        emailClient.sendEmail(
+        userEventProducer.SendUserCreatedEvent(
                 savedUser.getEmail(),
-                "You just created new admin " + savedUser.getUsername() + " successfully.",
-                adminEmailNotification
-        );
-        emailClient.sendEmail(
-                savedUser.getEmail(),
-                "Welcome " + savedUser.getUsername() + "!",
-                welcomeEmail
+                savedUser.getUsername(),
+                currentUser.getEmail()
         );
 
         logger.info("Sending welcome email to new user...");
