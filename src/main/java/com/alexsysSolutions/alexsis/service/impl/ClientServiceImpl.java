@@ -1,7 +1,6 @@
 package com.alexsysSolutions.alexsis.service.impl;
 
 
-import com.alexsysSolutions.alexsis.client.EmailClient;
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientCreateDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientUpdateByAdminDtoRequest;
 import com.alexsysSolutions.alexsis.dto.request.Client.ClientUpdateProfileDtoRequest;
@@ -17,9 +16,6 @@ import com.alexsysSolutions.alexsis.security.context.CurrentUserProvider;
 import com.alexsysSolutions.alexsis.service.ClientService;
 import com.alexsysSolutions.alexsis.util.PasswordUtil;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -29,7 +25,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service
@@ -43,8 +38,8 @@ public class ClientServiceImpl implements ClientService {
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
     private final EmailTemplateService templateService;
-    private EmailClient emailClient;
 
+    private final UserEventProducer userEventProducer;
     public ClientServiceImpl(
             ClientRepository clientRepository,
             ClientMapper clientMapper,
@@ -52,7 +47,7 @@ public class ClientServiceImpl implements ClientService {
             PasswordEncoder passwordEncoder,
             CloudinaryService cloudinaryService,
             EmailTemplateService templateService,
-            EmailClient emailClient
+            UserEventProducer userEventProducer
     ) {
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
@@ -60,7 +55,7 @@ public class ClientServiceImpl implements ClientService {
         this.passwordEncoder = passwordEncoder;
         this.cloudinaryService = cloudinaryService;
         this.templateService = templateService;
-        this.emailClient = emailClient;
+        this.userEventProducer = userEventProducer;
     }
 
     @Override
@@ -106,17 +101,12 @@ public class ClientServiceImpl implements ClientService {
         String adminEmailNotification = templateService.buildAdminNotificationTemplate(savedClient.getUsername(), savedClient.getEmail(), savedClient.getRole());
         String welcomeEmail = templateService.buildWelcomeEmailTemplate(savedClient.getUsername());
 
-        emailClient.sendEmail(
-                currentUser.getEmail(),
-                "You just created new Client \" " + savedClient.getUsername() + "\" successfully.",
-                adminEmailNotification
+        userEventProducer.SendUserCreatedEvent(
+                savedClient.getEmail(),
+                savedClient.getUsername(),
+                currentUser.getCurrentUser().getUser().getEmail()
         );
 
-        emailClient.sendEmail(
-                savedClient.getEmail(),
-                "Welcome " + savedClient.getUsername() + "!",
-                welcomeEmail
-        );
 
         logger.info("Sending welcome email to new user...");
         logger.info("Client created successfully with ID: {}", savedClient.getId());
