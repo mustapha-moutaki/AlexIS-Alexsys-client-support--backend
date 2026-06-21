@@ -27,7 +27,7 @@ public class DashboardOverViewDto {
     private String bestAgent; // max_rating => should be dto -id+name
     // resk detected
     private User RiskDetectedAgent; // agent overloaded with low performance
-    private double AvgLoadPerAgent;
+    private Double AvgLoadPerAgent;
 
     // ticket
     private int totalTickets;
