@@ -52,7 +52,7 @@ public class AgentStatsServiceImpl implements AgentStatsService {
     }
 
     @Override
-    public double avgLoadPerAgent() {
+    public Double avgLoadPerAgent() {
         return agentRepository.avgLoadPerAgent();
     }
 
