@@ -13,7 +13,7 @@ public interface AgentStatsService {
      Double averageResolutionTime();
      Double averagePerformanceRating();
      String bestAgent();
-     double avgLoadPerAgent();
+     Double avgLoadPerAgent();
      User riskDetected();
 
      // for graghs
