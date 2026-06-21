@@ -13,7 +13,7 @@ public class AgentStatsDto {
     private Double averageResolutionTime;
     private Double averagePerformanceRating;
     private String bestAgent; // "Agent Name (ID: 123)" based on max rating
-    private double avgLoadPerAgent; // average active tickets per agent
+    private Double avgLoadPerAgent; // average active tickets per agent
     private User riskDetected; // agent overloaded with low performance ( based on score: performance_rating - (activeTicketCount - maxCapacity))
 
 
