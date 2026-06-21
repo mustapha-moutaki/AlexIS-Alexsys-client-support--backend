@@ -60,7 +60,7 @@ public interface AgentRepository extends JpaRepository<Agent, Long> {
     String findBestAgent();
 
     @Query("SELECT avg(a.activeTicketsCount) FROM Agent a")
-    double avgLoadPerAgent();
+    Double avgLoadPerAgent();
 
     // riskDetected need to cal so in the service
 
