@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Map;
 
@@ -21,15 +23,20 @@ public class AiController {
 
     @PostMapping("/chat")
     @Operation(summary = "Chat with AI", description = "get help with alex intelligent support")
-    public Map<String, String> chat(@RequestBody Map<String, String> request) {
+    public Map<String, String> chat(
+            @RequestBody Map<String, String> request,
+            HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse
+    ) {
 
-        // Extract "question" from the incoming JSON
         String userQuestion = request.get("question");
 
-        // Get only the text response from the service
-        String aiResponse = groqService.askGroq(userQuestion);
+        String aiResponse = groqService.askGroq(
+                userQuestion,
+                httpRequest,
+                httpResponse
+        );
 
-        // Return as a clean JSON object: {"reply": "..."}
         return Map.of("reply", aiResponse);
     }
 }
